@@ -3,7 +3,8 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Facultad;
+use App\Models\Carrera;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -13,12 +14,33 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        // 1. Crear Facultades (puedes usar el seeder existente o aquí mismo)
+        $facultad = Facultad::create([
+            'nombreFacultad' => 'Facultad de Ingeniería y Arquitectura'
+        ]);
 
-        /*User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);*/
+        // 2. Crear Carreras asociadas a la facultad
+        $carrera = Carrera::create([
+            'nombreCarrera' => 'Ingeniería de Sistemas',
+            'facultad_id' => $facultad->id,
+        ]);
+
+        // 3. Crear un usuario administrador asociado a la carrera
+        User::factory()->create([
+            'name' => 'gian',
+            'email' => 'gluck.pastor@gmail.com',
+            'password' => bcrypt('12345678'),
+            'rol' => 'Administrador',
+            'user_carrera_id' => $carrera->id,
+        ]);
+
+        // 4. Si quieres más usuarios de prueba:
+        User::factory(5)->create([
+            'user_carrera_id' => $carrera->id,
+            'rol' => 'Coordinador',
+        ]);
+
+        // 5. Llama a otros seeders si los tienes
         $this->call(FacultadSeeder::class);
     }
 }
