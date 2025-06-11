@@ -6,5 +6,31 @@ use Illuminate\Database\Eloquent\Model;
 
 class Convenio extends Model
 {
-    //
+    protected $fillable = [
+        'nombreConvenio',
+        'convenio_id_entidad',
+        'descripcion',
+        'fecha_inicio',
+        'fecha_fin',
+        'estado',
+        'alcance',
+        'convenio_creador',
+        'facultad_id',
+        'carrera_id',
+    ];
+
+    public function entidad()
+    {
+        return $this->belongsTo(Entidad::class, 'convenio_id_entidad');
+    }
+
+    public function facultad()
+    {
+        return $this->belongsTo(Facultad::class, 'facultad_id');
+    }
+
+    public function carrera()
+    {
+        return $this->belongsTo(Carrera::class, 'carrera_id');
+    }
 }

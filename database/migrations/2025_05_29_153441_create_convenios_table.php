@@ -23,6 +23,10 @@ return new class extends Migration
             $table->foreign("convenio_creador")->references("id")->on("users")->onDelete("cascade");
             $table->unsignedBigInteger("convenio_id_entidad");
             $table->foreign("convenio_id_entidad")->references("id")->on("entidads")->onDelete("cascade");
+            $table->unsignedBigInteger('facultad_id');
+            $table->foreign('facultad_id')->references('id')->on('facultads')->onDelete('cascade');
+            $table->unsignedBigInteger('carrera_id');
+            $table->foreign('carrera_id')->references('id')->on('carreras')->onDelete('cascade');
 
             $table->timestamps();
         });

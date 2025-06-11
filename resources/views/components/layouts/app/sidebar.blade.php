@@ -14,6 +14,15 @@
             <flux:navlist variant="outline">
                 <flux:navlist.group :heading="__('Platform')" class="grid">
                     <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>{{ __('Dashboard') }}</flux:navlist.item>
+
+                    <!-- two nav item like this <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>{{ __('Dashboard') }}</flux:navlist.item>-->
+
+                    <flux:navlist.item icon="academic-cap" :href="route('convenios-main')" :current="request()->routeIs('convenios-main')" wire:navigate>{{ __('Convenios') }}</flux:navlist.item>
+
+                    <flux:navlist.item icon="building-office" :href="route('entidades-main')" :current="request()->routeIs('entidades-main')" wire:navigate>{{ __('Entidades') }}</flux:navlist.item>
+                    <flux:navlist.item icon="document" :href="route('reportes-main')" :current="request()->routeIs('reportes-main')" wire:navigate>{{ __('Reportes') }}</flux:navlist.item>
+                    <flux:navlist.item icon="cog-8-tooth" :href="route('configuracion-main')" :current="request()->routeIs('configuracion-main')" wire:navigate>{{ __('Configuración') }}</flux:navlist.item>
+
                 </flux:navlist.group>
             </flux:navlist>
 
