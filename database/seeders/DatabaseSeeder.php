@@ -15,7 +15,7 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // 1. Facultad de Ciencias Empresariales (FCE)
-        $fce = Facultad::create(['nombreFacultad' => 'Facultad de Ciencias Empresariales']);
+        $fce = Facultad::firstOrCreate(['nombreFacultad' => 'Facultad de Ciencias Empresariales']);
         $fce_carreras = [
             'Contabilidad',
             'Administración de Empresas',
@@ -23,14 +23,14 @@ class DatabaseSeeder extends Seeder
             'Marketing y Negocios Internacionales',
         ];
         foreach ($fce_carreras as $nombreCarrera) {
-            Carrera::create([
+            Carrera::firstOrCreate([
                 'nombreCarrera' => $nombreCarrera,
                 'facultad_id' => $fce->id,
             ]);
         }
 
         // 2. Facultad de Ciencias de la Salud (FCS)
-        $fcs = Facultad::create(['nombreFacultad' => 'Facultad de Ciencias de la Salud']);
+        $fcs = Facultad::firstOrCreate(['nombreFacultad' => 'Facultad de Ciencias de la Salud']);
         $fcs_carreras = [
             'Enfermería',
             'Psicología',
@@ -39,14 +39,14 @@ class DatabaseSeeder extends Seeder
             'Odontología',     // Solo sede central
         ];
         foreach ($fcs_carreras as $nombreCarrera) {
-            Carrera::create([
+            Carrera::firstOrCreate([
                 'nombreCarrera' => $nombreCarrera,
                 'facultad_id' => $fcs->id,
             ]);
         }
 
         // 3. Facultad de Ingeniería y Arquitectura (FIA)
-        $fia = Facultad::create(['nombreFacultad' => 'Facultad de Ingeniería y Arquitectura']);
+        $fia = Facultad::firstOrCreate(['nombreFacultad' => 'Facultad de Ingeniería y Arquitectura']);
         $fia_carreras = [
             'Ingeniería de Sistemas',
             'Ingeniería Ambiental',
@@ -55,14 +55,14 @@ class DatabaseSeeder extends Seeder
             'Ingeniería Industrial',
         ];
         foreach ($fia_carreras as $nombreCarrera) {
-            Carrera::create([
+            Carrera::firstOrCreate([
                 'nombreCarrera' => $nombreCarrera,
                 'facultad_id' => $fia->id,
             ]);
         }
 
         // 4. Facultad de Ciencias Humanas y Educación (FCHE)
-        $fche = Facultad::create(['nombreFacultad' => 'Facultad de Ciencias Humanas y Educación']);
+        $fche = Facultad::firstOrCreate(['nombreFacultad' => 'Facultad de Ciencias Humanas y Educación']);
         $fche_carreras = [
             'Educación Inicial',
             'Educación Primaria',
@@ -72,7 +72,7 @@ class DatabaseSeeder extends Seeder
             'Educación Religiosa',
         ];
         foreach ($fche_carreras as $nombreCarrera) {
-            Carrera::create([
+            Carrera::firstOrCreate([
                 'nombreCarrera' => $nombreCarrera,
                 'facultad_id' => $fche->id,
             ]);

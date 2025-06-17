@@ -153,7 +153,7 @@
                 {{-- Entidad --}}
                 <div>
                     <label>Entidad</label>
-                    <select wire:model="convenio_id_entidad" class="w-full border rounded px-3 py-2 text-sm">
+                    <select wire:model.live="convenio_id_entidad" class="w-full border rounded px-3 py-2 text-sm">
                         <option value="">Seleccione</option>
                         @foreach($entidades as $entidad)
                             <option value="{{ $entidad->id }}">{{ $entidad->nombreEntidad }}</option>
@@ -178,7 +178,7 @@
                 @if($alcance === 'Carrera')
                     <div>
                         <label>Carrera</label>
-                        <select wire:model="carrera_id" class="w-full border rounded px-3 py-2 text-sm">
+                        <select wire:model.live="carrera_id" class="w-full border rounded px-3 py-2 text-sm">
                             <option value="">Seleccione</option>
                             @foreach($carreras as $carrera)
                                 <option value="{{ $carrera->id }}">{{ $carrera->nombreCarrera }}</option>
