@@ -14,33 +14,84 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // 1. Crear Facultades (puedes usar el seeder existente o aquí mismo)
-        $facultad = Facultad::create([
-            'nombreFacultad' => 'Facultad de Ingeniería y Arquitectura'
-        ]);
+        // 1. Facultad de Ciencias Empresariales (FCE)
+        $fce = Facultad::create(['nombreFacultad' => 'Facultad de Ciencias Empresariales']);
+        $fce_carreras = [
+            'Contabilidad',
+            'Administración de Empresas',
+            'Administración en Hotelería y Turismo',
+            'Marketing y Negocios Internacionales',
+        ];
+        foreach ($fce_carreras as $nombreCarrera) {
+            Carrera::create([
+                'nombreCarrera' => $nombreCarrera,
+                'facultad_id' => $fce->id,
+            ]);
+        }
 
-        // 2. Crear Carreras asociadas a la facultad
-        $carrera = Carrera::create([
-            'nombreCarrera' => 'Ingeniería de Sistemas',
-            'facultad_id' => $facultad->id,
-        ]);
+        // 2. Facultad de Ciencias de la Salud (FCS)
+        $fcs = Facultad::create(['nombreFacultad' => 'Facultad de Ciencias de la Salud']);
+        $fcs_carreras = [
+            'Enfermería',
+            'Psicología',
+            'Nutrición Humana',
+            'Medicina Humana', // Solo sede central
+            'Odontología',     // Solo sede central
+        ];
+        foreach ($fcs_carreras as $nombreCarrera) {
+            Carrera::create([
+                'nombreCarrera' => $nombreCarrera,
+                'facultad_id' => $fcs->id,
+            ]);
+        }
 
-        // 3. Crear un usuario administrador asociado a la carrera
-        User::factory()->create([
-            'name' => 'gian',
-            'email' => 'gluck.pastor@gmail.com',
-            'password' => bcrypt('12345678'),
-            'rol' => 'Administrador',
-            'user_carrera_id' => $carrera->id,
-        ]);
+        // 3. Facultad de Ingeniería y Arquitectura (FIA)
+        $fia = Facultad::create(['nombreFacultad' => 'Facultad de Ingeniería y Arquitectura']);
+        $fia_carreras = [
+            'Ingeniería de Sistemas',
+            'Ingeniería Ambiental',
+            'Arquitectura',
+            'Ingeniería Civil',
+            'Ingeniería Industrial',
+        ];
+        foreach ($fia_carreras as $nombreCarrera) {
+            Carrera::create([
+                'nombreCarrera' => $nombreCarrera,
+                'facultad_id' => $fia->id,
+            ]);
+        }
 
-        // 4. Si quieres más usuarios de prueba:
-        User::factory(5)->create([
-            'user_carrera_id' => $carrera->id,
-            'rol' => 'Coordinador',
-        ]);
+        // 4. Facultad de Ciencias Humanas y Educación (FCHE)
+        $fche = Facultad::create(['nombreFacultad' => 'Facultad de Ciencias Humanas y Educación']);
+        $fche_carreras = [
+            'Educación Inicial',
+            'Educación Primaria',
+            'Educación Secundaria en Matemática y Física',
+            'Educación Secundaria en Comunicación y Ciencias Sociales',
+            'Educación Secundaria en Biología y Química',
+            'Educación Religiosa',
+        ];
+        foreach ($fche_carreras as $nombreCarrera) {
+            Carrera::create([
+                'nombreCarrera' => $nombreCarrera,
+                'facultad_id' => $fche->id,
+            ]);
+        }
 
-        // 5. Llama a otros seeders si los tienes
-        $this->call(FacultadSeeder::class);
+        // Usuario de ejemplo (asociado a Ingeniería de Sistemas)
+        $carreraEjemplo = Carrera::where('nombreCarrera', 'Ingeniería de Sistemas')->first();
+        if ($carreraEjemplo) {
+            User::factory()->create([
+                'name' => 'gian',
+                'email' => 'gluck.pastor@gmail.com',
+                'password' => bcrypt('12345678'),
+                'rol' => 'Administrador',
+                'user_carrera_id' => $carreraEjemplo->id,
+            ]);
+            User::factory(5)->create([
+                'user_carrera_id' => $carreraEjemplo->id,
+                'rol' => 'Coordinador',
+            ]);
+        }
     }
 }
