@@ -19,6 +19,7 @@ return new class extends Migration
             $table->time('hora_subida');
             $table->unsignedBigInteger("convenio_id");
             $table->foreign("convenio_id")->references("id")->on("convenios")->onDelete("cascade");
+            $table->string('ruta')->nullable();
             $table->timestamps();
         });
     }

@@ -11,6 +11,12 @@
 <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
 <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
 <script src="//unpkg.com/alpinejs" defer></script>
+<!-- FilePond CSS -->
+<link href="https://unpkg.com/filepond@^4/dist/filepond.css" rel="stylesheet" />
+<!-- FilePond JS -->
+<script src="https://unpkg.com/filepond@^4/dist/filepond.js"></script>
+<!-- FilePond Plugin for File Type Validation (opcional) -->
+<script src="https://unpkg.com/filepond-plugin-file-validate-type/dist/filepond-plugin-file-validate-type.js"></script>
 
 @vite(['resources/css/app.css', 'resources/js/app.js'])
 @fluxAppearance

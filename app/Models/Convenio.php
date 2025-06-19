@@ -33,4 +33,9 @@ class Convenio extends Model
     {
         return $this->belongsTo(Carrera::class, 'carrera_id');
     }
+    
+    public function documentos()
+    {
+        return $this->hasMany(\App\Models\DocumentoConvenio::class, 'convenio_id');
+    }
 }

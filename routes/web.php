@@ -7,6 +7,7 @@ use App\Livewire\InstitucionesMain;
 use App\Livewire\ReportesMain;
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
+use App\Http\Controllers\ClausulaController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -27,9 +28,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('reportes', ReportesMain::class)->name('reportes-main');
     Route::get('instituciones', InstitucionesMain::class)->name('instituciones-main');
     Route::get('configuracion', ConfiguracionMain::class)->name('configuracion-main');
-
-
-
+    Route::get('clausulas/descargar/{id}', [ClausulaController::class, 'descargar'])->name('clausulas.descargar');
+    Route::delete('/clausulas/eliminar/{id}', [ClausulaController::class, 'eliminar'])->name('clausulas.eliminar');
+    Route::get('/convenios/crear', \App\Livewire\CRUDConv::class)->name('convenios.create');
+    Route::get('/convenios/{id}/editar', \App\Livewire\CRUDConv::class)->name('convenios.edit');
 });
 
 require __DIR__.'/auth.php';

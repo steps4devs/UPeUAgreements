@@ -1,12 +1,18 @@
 <?php
 namespace App\Livewire;
 
+use App\Models\Carrera;
 use Livewire\Component;
+use Livewire\WithFileUploads;
 use App\Models\Convenio;
+use App\Models\DocumentoConvenio;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class ConveniosMain extends Component
 {
+    use WithFileUploads;
+
     public $search = '';
     public $perPage = 10;
     public $modalOpen = false;
@@ -17,6 +23,12 @@ class ConveniosMain extends Component
     public $entidades = [];
     public $facultades = [];
     public $carreras = [];
+    public $clausulas = [];
+    public $clausulas_acumuladas = [];
+    public $archivos_guardados = [];
+
+    public $modalEditArchivosOpen = false;
+    public $convenioIdEditArchivos = null;
 
     protected function rules()
     {
@@ -41,6 +53,8 @@ class ConveniosMain extends Component
             $rules['carrera_id'] = 'nullable|integer';
         }
 
+        $rules['clausulas.*'] = 'file|max:10240';
+
         return $rules;
     }
 
@@ -63,17 +77,14 @@ class ConveniosMain extends Component
 
     public function openModal($id = null)
     {
-        $this->resetValidation();
-        $this->reset([
-            'nombreConvenio', 'descripcion', 'fecha_inicio', 'fecha_fin', 'estado', 'alcance',
-            'convenio_id_entidad', 'facultad_id', 'carrera_id', 'convenioId'
-        ]);
+        $this->reset(['clausulas', 'clausulas_acumuladas', 'archivos_guardados']);
         $this->modalOpen = true;
         $this->editing = false;
 
         if ($id) {
-            $convenio = Convenio::findOrFail($id);
-            $this->convenioId = $convenio->id;
+            $this->editing = true;
+            $this->convenioId = $id;
+            $convenio = Convenio::with('documentos')->findOrFail($id);
             $this->nombreConvenio = $convenio->nombreConvenio;
             $this->descripcion = $convenio->descripcion;
             $this->fecha_inicio = $convenio->fecha_inicio;
@@ -82,63 +93,87 @@ class ConveniosMain extends Component
             $this->alcance = $convenio->alcance;
             $this->convenio_id_entidad = $convenio->convenio_id_entidad;
             $this->facultad_id = $convenio->facultad_id;
+            $this->carreras = Carrera::where('facultad_id', $this->facultad_id)->get();
             $this->carrera_id = $convenio->carrera_id;
-            $this->editing = true;
+            $this->archivos_guardados = $convenio->documentos->toArray();
         }
     }
 
     public function save()
     {
-        $this->validate();
+        try {
+            $this->validate();
 
-        // Calcular estado
-        $estado = null;
-        if ($this->fecha_fin) {
-            $hoy = now()->startOfDay();
-            $fin = \Carbon\Carbon::parse($this->fecha_fin)->startOfDay();
-            $dias = $hoy->diffInDays($fin, false);
+            // Calcular estado
+            $estado = null;
+            if ($this->fecha_fin) {
+                $hoy = now()->startOfDay();
+                $fin = \Carbon\Carbon::parse($this->fecha_fin)->startOfDay();
+                $dias = $hoy->diffInDays($fin, false);
 
-            if ($fin->lt($hoy)) {
-                $estado = 'Vencido';
-            } elseif ($dias <= 15) {
-                $estado = 'Por vencer';
+                if ($fin->lt($hoy)) {
+                    $estado = 'Vencido';
+                } elseif ($dias <= 30) {
+                    $estado = 'Por vencer';
+                } else {
+                    $estado = 'Vigente';
+                }
             } else {
                 $estado = 'Vigente';
             }
-        } else {
-            $estado = 'Vigente';
+
+            $convenio = $this->editing && $this->convenioId
+                ? Convenio::findOrFail($this->convenioId)
+                : new Convenio();
+
+            $convenio->nombreConvenio = $this->nombreConvenio;
+            $convenio->descripcion = $this->descripcion;
+            $convenio->fecha_inicio = $this->fecha_inicio;
+            $convenio->fecha_fin = $this->fecha_fin;
+            $convenio->estado = $estado;
+            $convenio->alcance = $this->alcance;
+            $convenio->convenio_id_entidad = $this->convenio_id_entidad;
+            $convenio->facultad_id = ($this->alcance === 'Facultad' || $this->alcance === 'Carrera') ? $this->facultad_id : null;
+            $convenio->carrera_id = ($this->alcance === 'Carrera') ? $this->carrera_id : null;
+            $convenio->convenio_creador = Auth::id();
+            $convenio->save();
+
+            // Guardar archivos de cláusulas en la base de datos (solo si hay archivos nuevos)
+            if ($this->clausulas_acumuladas && is_array($this->clausulas_acumuladas)) {
+                foreach ($this->clausulas_acumuladas as $archivo) {
+                    $mime = $archivo->getClientMimeType();
+                    if (str_contains($mime, 'pdf')) {
+                        $tipo = 'PDF';
+                    } elseif (str_contains($mime, 'image')) {
+                        $tipo = 'Imagen';
+                    } else {
+                        $tipo = 'Otro';
+                    }
+
+                    $path = $archivo->store('clausulas');
+                    DocumentoConvenio::create([
+                        'nombreArchivo'   => $archivo->getClientOriginalName(),
+                        'tipo_documento'  => $tipo,
+                        'fecha_subida'    => now()->toDateString(),
+                        'hora_subida'     => now()->toTimeString(),
+                        'convenio_id'     => $convenio->id,
+                        'ruta'            => $path,
+                    ]);
+                }
+            }
+
+            $this->modalOpen = false;
+            $this->editing = false;
+            $this->reset(['convenioId', 'clausulas', 'clausulas_acumuladas']);
+        } catch (\Exception $e) {
+            session()->flash('error', $e->getMessage());
+            throw $e;
         }
-
-        $convenio = $this->editing && $this->convenioId
-            ? Convenio::findOrFail($this->convenioId)
-            : new Convenio();
-
-        $convenio->nombreConvenio = $this->nombreConvenio;
-        $convenio->descripcion = $this->descripcion;
-        $convenio->fecha_inicio = $this->fecha_inicio;
-        $convenio->fecha_fin = $this->fecha_fin;
-        $convenio->estado = $estado;
-        $convenio->alcance = $this->alcance;
-        $convenio->convenio_id_entidad = $this->convenio_id_entidad;
-        $convenio->facultad_id = ($this->alcance === 'Facultad' || $this->alcance === 'Carrera') ? $this->facultad_id : null;
-        $convenio->carrera_id = ($this->alcance === 'Carrera') ? $this->carrera_id : null;
-        $convenio->convenio_creador = Auth::id();
-        $convenio->save();
-
-        $this->modalOpen = false;
-        $this->editing = false;
-        $this->reset(['convenioId']);
     }
 
     public function delete($id)
     {
         Convenio::findOrFail($id)->delete();
-    }
-
-    // Opcional: para el botón de detalles
-    public function showDetails($id)
-    {
-        // Aquí puedes abrir otro modal o redirigir a una vista de detalles
     }
 
     public function updatedAlcance($value)
@@ -156,5 +191,86 @@ class ConveniosMain extends Component
             $this->carreras = [];
             $this->carrera_id = null;
         }
+    }
+
+    public function updatedClausulas($files)
+    {
+        foreach ($files as $file) {
+            $this->clausulas_acumuladas[] = $file;
+        }
+        $this->clausulas = [];
+    }
+
+    public function eliminarArchivo($key)
+    {
+        unset($this->clausulas_acumuladas[$key]);
+        $this->clausulas_acumuladas = array_values($this->clausulas_acumuladas);
+    }
+
+    public function cerrarModal()
+    {
+        $this->modalOpen = false;
+        $this->editing = false;
+        $this->reset(['convenioId', 'clausulas', 'clausulas_acumuladas']);
+    }
+
+    // Abre el modal de edición de archivos
+    public function openEditArchivosModal($convenioId)
+    {
+        $this->convenioIdEditArchivos = $convenioId;
+        $convenio = Convenio::with('documentos')->findOrFail($convenioId);
+        $this->archivos_guardados = $convenio->documentos->toArray();
+        $this->clausulas = [];
+        $this->clausulas_acumuladas = [];
+        $this->modalEditArchivosOpen = true;
+    }
+
+    // Guarda los nuevos archivos subidos
+    public function guardarNuevosArchivos()
+    {
+        if ($this->clausulas_acumuladas && is_array($this->clausulas_acumuladas)) {
+            foreach ($this->clausulas_acumuladas as $archivo) {
+                $mime = $archivo->getClientMimeType();
+                if (str_contains($mime, 'pdf')) {
+                    $tipo = 'PDF';
+                } elseif (str_contains($mime, 'image')) {
+                    $tipo = 'Imagen';
+                } else {
+                    $tipo = 'Otro';
+                }
+                $path = $archivo->store('clausulas');
+                DocumentoConvenio::create([
+                    'nombreArchivo'   => $archivo->getClientOriginalName(),
+                    'tipo_documento'  => $tipo,
+                    'fecha_subida'    => now()->toDateString(),
+                    'hora_subida'     => now()->toTimeString(),
+                    'convenio_id'     => $this->convenioIdEditArchivos,
+                    'ruta'            => $path,
+                ]);
+            }
+        }
+        $this->cerrarModalEditArchivos();
+    }
+
+    // Elimina un archivo guardado
+    public function eliminarArchivoGuardado($id)
+    {
+        $doc = DocumentoConvenio::find($id);
+        if ($doc) {
+            Storage::delete($doc->ruta);
+            $doc->delete();
+        }
+        // Refresca la lista
+        $this->archivos_guardados = Convenio::with('documentos')->find($this->convenioIdEditArchivos)->documentos->toArray();
+    }
+
+    // Cierra el modal de edición de archivos
+    public function cerrarModalEditArchivos()
+    {
+        $this->modalEditArchivosOpen = false;
+        $this->clausulas = [];
+        $this->clausulas_acumuladas = [];
+        $this->archivos_guardados = [];
+        $this->convenioIdEditArchivos = null;
     }
 }
