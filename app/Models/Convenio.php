@@ -7,16 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 class Convenio extends Model
 {
     protected $fillable = [
-        'nombreConvenio',
-        'convenio_id_entidad',
-        'descripcion',
-        'fecha_inicio',
-        'fecha_fin',
-        'estado',
-        'alcance',
-        'convenio_creador',
-        'facultad_id',
-        'carrera_id',
+        'nombreConvenio', 'descripcion', 'fecha_inicio', 'fecha_fin', 'estado', 'alcance',
+        'convenio_creador', 'convenio_id_entidad', 'facultad_id', 'carrera_id',
+        'ambito_1', 'ambito_2', 'ambito_3'
     ];
 
     public function entidad()

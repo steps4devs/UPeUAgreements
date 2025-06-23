@@ -28,6 +28,28 @@ return new class extends Migration
             $table->unsignedBigInteger('carrera_id')->nullable();
             $table->foreign('carrera_id')->references('id')->on('carreras')->onDelete('cascade');
 
+            $table->enum('ambito_1', [
+                'Investigación', 'Prácticas Profesionales', 'Transferencia Tecnológica', 'Movilidad Académica',
+                'Capacitación', 'Desarrollo de Proyectos', 'Intercambio Cultural', 'Responsabilidad Social',
+                'Innovación', 'Emprendimiento', 'Servicios Tecnológicos', 'Consultoría', 'Educación Continua',
+                'Desarrollo Sostenible', 'Vinculación Empresarial', 'Internacionalización', 'Publicaciones',
+                'Eventos Académicos', 'Otros'
+            ])->nullable();
+            $table->enum('ambito_2', [
+                'Investigación', 'Prácticas Profesionales', 'Transferencia Tecnológica', 'Movilidad Académica',
+                'Capacitación', 'Desarrollo de Proyectos', 'Intercambio Cultural', 'Responsabilidad Social',
+                'Innovación', 'Emprendimiento', 'Servicios Tecnológicos', 'Consultoría', 'Educación Continua',
+                'Desarrollo Sostenible', 'Vinculación Empresarial', 'Internacionalización', 'Publicaciones',
+                'Eventos Académicos', 'Otros'
+            ])->nullable();
+            $table->enum('ambito_3', [
+                'Investigación', 'Prácticas Profesionales', 'Transferencia Tecnológica', 'Movilidad Académica',
+                'Capacitación', 'Desarrollo de Proyectos', 'Intercambio Cultural', 'Responsabilidad Social',
+                'Innovación', 'Emprendimiento', 'Servicios Tecnológicos', 'Consultoría', 'Educación Continua',
+                'Desarrollo Sostenible', 'Vinculación Empresarial', 'Internacionalización', 'Publicaciones',
+                'Eventos Académicos', 'Otros'
+            ])->nullable();
+
             $table->timestamps();
         });
     }

@@ -78,9 +78,11 @@
                 </div>
                 <!-- Acciones -->
                 <div class="flex gap-1 justify-start md:justify-center mt-2 md:mt-0">
-                    <button wire:click="showDetails({{ $convenio->id }})" class="text-green-600 hover:text-green-900 p-2 rounded-full hover:bg-green-100 transition">
+                    <a href="{{ route('convenios.detalle', $convenio->id) }}" 
+                       class="text-green-600 hover:text-green-900 p-2 rounded-full hover:bg-green-100 transition" 
+                       title="Ver detalles">
                         <x-heroicon-o-eye class="w-7 h-7"/>
-                    </button>
+                    </a>
                     <a href="{{ route('convenios.edit', $convenio->id) }}" class="text-blue-600 hover:text-blue-900 p-2 rounded-full hover:bg-blue-100 transition">
                         <x-heroicon-o-pencil-square class="w-7 h-7"/>
                     </a>

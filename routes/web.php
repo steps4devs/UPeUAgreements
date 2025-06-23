@@ -2,6 +2,7 @@
 
 use App\Livewire\ConfiguracionMain;
 use App\Livewire\ConveniosMain;
+use App\Livewire\DetalleConv;
 use App\Livewire\EntidadesMain;
 use App\Livewire\InstitucionesMain;
 use App\Livewire\ReportesMain;
@@ -32,6 +33,7 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/clausulas/eliminar/{id}', [ClausulaController::class, 'eliminar'])->name('clausulas.eliminar');
     Route::get('/convenios/crear', \App\Livewire\CRUDConv::class)->name('convenios.create');
     Route::get('/convenios/{id}/editar', \App\Livewire\CRUDConv::class)->name('convenios.edit');
+    Route::get('/convenios/{id}/detalle', DetalleConv::class)->name('convenios.detalle');
 });
 
 require __DIR__.'/auth.php';
