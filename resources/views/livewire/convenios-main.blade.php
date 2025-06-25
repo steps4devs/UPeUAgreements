@@ -1,8 +1,9 @@
 <div class="w-full p-2 sm:p-4 md:p-6 bg-white rounded-lg shadow">
     <div class="flex flex-col md:flex-row md:justify-between md:items-center mb-4 gap-2">
         <h2 class="text-xl sm:text-2xl font-bold">Gestión de Convenios</h2>
-        <a href="{{ route('convenios.create') }}" class="flex items-center justify-center px-3 py-2 sm:px-4 sm:py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm sm:text-base">
-            <x-heroicon-o-plus class="w-6 h-6 sm:w-5 sm:h-5 mr-2"/>
+        <a href="{{ route('convenios.create') }}"
+           class="h-9 px-6 flex items-center justify-center border border-[#0097ff] bg-white text-black rounded-full font-medium transition text-sm hover:bg-[#eaf6ff]">
+            <x-heroicon-o-plus class="w-5 h-5 mr-2"/>
             Nuevo Convenio
         </a>
     </div>
@@ -78,8 +79,8 @@
                 </div>
                 <!-- Acciones -->
                 <div class="flex gap-1 justify-start md:justify-center mt-2 md:mt-0">
-                    <a href="{{ route('convenios.detalle', $convenio->id) }}" 
-                       class="text-green-600 hover:text-green-900 p-2 rounded-full hover:bg-green-100 transition" 
+                    <a href="{{ route('convenios.detalle', $convenio->id) }}"
+                       class="text-green-600 hover:text-green-900 p-2 rounded-full hover:bg-green-100 transition"
                        title="Ver detalles">
                         <x-heroicon-o-eye class="w-7 h-7"/>
                     </a>
