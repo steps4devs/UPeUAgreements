@@ -19,8 +19,6 @@ class DatabaseSeeder extends Seeder
         $fce_carreras = [
             'Contabilidad',
             'Administración de Empresas',
-            'Administración en Hotelería y Turismo',
-            'Marketing y Negocios Internacionales',
         ];
         foreach ($fce_carreras as $nombreCarrera) {
             Carrera::firstOrCreate([
@@ -68,8 +66,7 @@ class DatabaseSeeder extends Seeder
             'Educación Primaria',
             'Educación Secundaria en Matemática y Física',
             'Educación Secundaria en Comunicación y Ciencias Sociales',
-            'Educación Secundaria en Biología y Química',
-            'Educación Religiosa',
+            'Educación Secundaria en Inglés',
         ];
         foreach ($fche_carreras as $nombreCarrera) {
             Carrera::firstOrCreate([

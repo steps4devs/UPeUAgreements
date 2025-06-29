@@ -16,17 +16,70 @@
         </select>
     </div>
 
+    <!-- Filtros avanzados -->
+    <div class="flex flex-col sm:flex-row flex-wrap gap-2 mb-4">
+        <!-- Estado -->
+        <select wire:model.live="filtro_estado" class="border rounded px-2 py-2 text-sm w-full sm:w-auto">
+            <option value="">Todos los estados</option>
+            <option value="Vigente">Vigente</option>
+            <option value="Por vencer">Por vencer</option>
+            <option value="Vencido">Vencido</option>
+        </select>
+
+        <!-- Entidad -->
+        <select wire:model.live="filtro_entidad" class="border rounded px-2 py-2 text-sm w-full sm:w-auto">
+            <option value="">Todas las entidades</option>
+            @foreach($entidades as $entidad)
+                <option value="{{ $entidad->id }}">{{ $entidad->nombreEntidad }}</option>
+            @endforeach
+        </select>
+
+        <!-- Alcance -->
+        <select wire:model.live="filtro_alcance" class="border rounded px-2 py-2 text-sm w-full sm:w-auto">
+            <option value="">Todos los alcances</option>
+            <option value="Carrera">Carrera</option>
+            <option value="Facultad">Facultad</option>
+            <option value="Universidad">Universidad</option>
+        </select>
+
+        <!-- Facultad (solo si el alcance es Carrera o Facultad) -->
+        @if($filtro_alcance === 'Carrera' || $filtro_alcance === 'Facultad')
+            <select wire:model.live="filtro_facultad" class="border rounded px-2 py-2 text-sm w-full sm:w-auto">
+                <option value="">Todas las facultades</option>
+                @foreach($facultades as $facultad)
+                    <option value="{{ $facultad->id }}">{{ $facultad->nombreFacultad }}</option>
+                @endforeach
+            </select>
+        @endif
+
+        <!-- Carrera (solo si el alcance es Carrera y hay facultad seleccionada) -->
+        @if($filtro_alcance === 'Carrera' && $filtro_facultad)
+            <select wire:model.live="filtro_carrera" class="border rounded px-2 py-2 text-sm w-full sm:w-auto">
+                <option value="">Todas las carreras</option>
+                @foreach($carreras as $carrera)
+                    <option value="{{ $carrera->id }}">{{ $carrera->nombreCarrera }}</option>
+                @endforeach
+            </select>
+        @endif
+
+        <!-- Fecha Inicio -->
+        <input type="date" wire:model.live="filtro_fecha_inicio" class="border rounded px-2 py-2 text-sm w-full sm:w-auto" placeholder="Desde">
+
+        <!-- Fecha Fin -->
+        <input type="date" wire:model.live="filtro_fecha_fin" class="border rounded px-2 py-2 text-sm w-full sm:w-auto" placeholder="Hasta">
+    </div>
+
     <!-- Encabezados (solo desktop) -->
     <div class="hidden md:grid grid-cols-9 gap-2 bg-gray-100 rounded-t-lg px-2 sm:px-4 py-2 font-semibold text-xs sm:text-sm">
-        <div>Nombre</div>
-        <div>Estado</div>
-        <div>Fecha Inicio</div>
-        <div>Fecha Fin</div>
-        <div>Alcance</div>
-        <div>Entidad</div>
-        <div>Facultad</div>
-        <div>Carrera</div>
-        <div>Acciones</div>
+        <div class="truncate">Nombre</div>
+        <div class="truncate">Estado</div>
+        <div class="truncate">Fecha Inicio</div>
+        <div class="truncate">Fecha Fin</div>
+        <div class="truncate">Alcance</div>
+        <div class="truncate">Entidad</div>
+        <div class="truncate">Facultad</div>
+        <div class="truncate">Carrera</div>
+        <div class="truncate">Acciones</div>
     </div>
 
     <!-- Filas -->
@@ -34,7 +87,7 @@
         @forelse($convenios as $convenio)
             <div wire:key="convenio-{{ $convenio->id }}" class="grid grid-cols-1 md:grid-cols-9 gap-2 items-center px-2 sm:px-4 py-3 hover:bg-gray-50 text-xs sm:text-sm">
                 <!-- Nombre -->
-                <div>
+                <div class="break-words whitespace-normal min-w-0" title="{{ $convenio->nombreConvenio }}">
                     <span class="md:hidden font-semibold text-gray-500">Nombre: </span>
                     <span class="font-medium">{{ $convenio->nombreConvenio }}</span>
                 </div>
@@ -42,42 +95,49 @@
                 <div>
                     <span class="md:hidden font-semibold text-gray-500">Estado: </span>
                     <span class="inline-flex items-center px-2 py-1 rounded text-xs
-                        {{ $convenio->estado == 'Vigente' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700' }}">
+                        @if($convenio->estado == 'Vigente')
+                            bg-green-100 text-green-700
+                        @elseif($convenio->estado == 'Por vencer')
+                            bg-yellow-100 text-yellow-700
+                        @else
+                            bg-red-100 text-red-700
+                        @endif
+                    ">
                         {{ $convenio->estado }}
                     </span>
                 </div>
                 <!-- Fecha Inicio -->
-                <div>
+                <div class="break-words whitespace-normal min-w-0">
                     <span class="md:hidden font-semibold text-gray-500">Inicio: </span>
                     <span>{{ $convenio->fecha_inicio }}</span>
                 </div>
                 <!-- Fecha Fin -->
-                <div>
+                <div class="break-words whitespace-normal min-w-0">
                     <span class="md:hidden font-semibold text-gray-500">Fin: </span>
                     <span>{{ $convenio->fecha_fin }}</span>
                 </div>
                 <!-- Alcance -->
-                <div>
+                <div class="break-words whitespace-normal min-w-0">
                     <span class="md:hidden font-semibold text-gray-500">Alcance: </span>
                     <span>{{ $convenio->alcance }}</span>
                 </div>
                 <!-- Entidad -->
-                <div>
+                <div class="break-words whitespace-normal min-w-0" title="{{ $convenio->entidad->nombreEntidad ?? '' }}">
                     <span class="md:hidden font-semibold text-gray-500">Entidad: </span>
                     <span>{{ $convenio->entidad->nombreEntidad ?? '' }}</span>
                 </div>
                 <!-- Facultad -->
-                <div>
+                <div class="break-words whitespace-normal min-w-0" title="{{ $convenio->facultad->nombreFacultad ?? '' }}">
                     <span class="md:hidden font-semibold text-gray-500">Facultad: </span>
                     <span>{{ $convenio->facultad->nombreFacultad ?? '' }}</span>
                 </div>
                 <!-- Carrera -->
-                <div>
+                <div class="break-words whitespace-normal min-w-0" title="{{ $convenio->carrera->nombreCarrera ?? '' }}">
                     <span class="md:hidden font-semibold text-gray-500">Carrera: </span>
                     <span>{{ $convenio->carrera->nombreCarrera ?? '' }}</span>
                 </div>
                 <!-- Acciones -->
-                <div class="flex gap-1 justify-start md:justify-center mt-2 md:mt-0">
+                <div class="flex flex-wrap gap-1 justify-start md:justify-center mt-2 md:mt-0">
                     <a href="{{ route('convenios.detalle', $convenio->id) }}" 
                        class="text-green-600 hover:text-green-900 p-2 rounded-full hover:bg-green-100 transition" 
                        title="Ver detalles">
@@ -134,16 +194,7 @@
                             </div>
                         </div>
                         <div>
-                            <label>Alcance</label>
-                            <select wire:model.live="alcance" class="w-full border rounded px-3 py-2 text-sm">
-                                <option value="">Seleccione</option>
-                                <option value="Carrera">Carrera</option>
-                                <option value="Facultad">Facultad</option>
-                                <option value="Universidad">Universidad</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label>Entidad</label>
+                            <label class="block text-sm font-medium">Entidad</label>
                             <select wire:model.live="convenio_id_entidad" class="w-full border rounded px-3 py-2 text-sm">
                                 <option value="">Seleccione</option>
                                 @foreach($entidades as $entidad)
@@ -151,9 +202,18 @@
                                 @endforeach
                             </select>
                         </div>
+                        <div>
+                            <label class="block text-sm font-medium">Alcance</label>
+                            <select wire:model.live="alcance" class="w-full border rounded px-3 py-2 text-sm">
+                                <option value="">Seleccione</option>
+                                <option value="Carrera">Carrera</option>
+                                <option value="Facultad">Facultad</option>
+                                <option value="Universidad">Universidad</option>
+                            </select>
+                        </div>
                         @if($alcance === 'Carrera' || $alcance === 'Facultad')
                             <div>
-                                <label>Facultad</label>
+                                <label class="block text-sm font-medium">Facultad</label>
                                 <select wire:model.live="facultad_id" class="w-full border rounded px-3 py-2 text-sm">
                                     <option value="">Seleccione</option>
                                     @foreach($facultades as $facultad)
@@ -164,7 +224,7 @@
                         @endif
                         @if($alcance === 'Carrera')
                             <div>
-                                <label>Carrera</label>
+                                <label class="block text-sm font-medium">Carrera</label>
                                 <select wire:model.live="carrera_id" class="w-full border rounded px-3 py-2 text-sm">
                                     <option value="">Seleccione</option>
                                     @foreach($carreras as $carrera)
@@ -204,7 +264,6 @@
                                     <div class="flex items-center gap-2 bg-white rounded shadow px-2 py-1">
                                         <x-heroicon-o-document class="w-5 h-5"/>
                                         <span class="truncate text-xs">{{ $archivo->getClientOriginalName() }}</span>
-                                        <!-- Descargar archivo -->
                                         @php
                                             $previewable = false;
                                             $ext = strtolower(pathinfo($archivo->getClientOriginalName(), PATHINFO_EXTENSION));
@@ -220,7 +279,6 @@
                                         @else
                                             <span class="text-gray-400 text-xs">No disponible para descarga directa</span>
                                         @endif
-                                        <!-- Eliminar archivo -->
                                         <button type="button"
                                             class="text-red-600 hover:text-red-800"
                                             wire:click="eliminarArchivo({{ $key }})"
@@ -247,7 +305,6 @@
     <div class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
         <div class="bg-white rounded-lg shadow-lg w-full max-w-xl p-4">
             <h3 class="text-lg font-semibold mb-4">Editar Archivos del Convenio</h3>
-            <!-- Archivos guardados -->
             @if($archivos_guardados)
                 <div class="space-y-2 mb-4">
                     @foreach($archivos_guardados as $doc)
@@ -268,7 +325,6 @@
                 </div>
             @endif
 
-            <!-- Subir nuevos archivos -->
             <input type="file" multiple wire:model="clausulas" class="mb-2">
             @error('clausulas.*') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
 

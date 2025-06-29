@@ -30,6 +30,14 @@ class ConveniosMain extends Component
     public $modalEditArchivosOpen = false;
     public $convenioIdEditArchivos = null;
 
+    public $filtro_estado = '';
+    public $filtro_alcance = '';
+    public $filtro_entidad = '';
+    public $filtro_facultad = '';
+    public $filtro_carrera = '';
+    public $filtro_fecha_inicio = '';
+    public $filtro_fecha_fin = '';
+
     protected function rules()
     {
         $rules = [
@@ -68,6 +76,13 @@ class ConveniosMain extends Component
     public function render()
     {
         $convenios = Convenio::with(['entidad', 'facultad', 'carrera'])
+            ->when($this->filtro_estado, fn($q) => $q->where('estado', $this->filtro_estado))
+            ->when($this->filtro_alcance, fn($q) => $q->where('alcance', $this->filtro_alcance))
+            ->when($this->filtro_entidad, fn($q) => $q->where('convenio_id_entidad', $this->filtro_entidad))
+            ->when($this->filtro_facultad, fn($q) => $q->where('facultad_id', $this->filtro_facultad))
+            ->when($this->filtro_carrera, fn($q) => $q->where('carrera_id', $this->filtro_carrera))
+            ->when($this->filtro_fecha_inicio, fn($q) => $q->whereDate('fecha_inicio', '>=', $this->filtro_fecha_inicio))
+            ->when($this->filtro_fecha_fin, fn($q) => $q->whereDate('fecha_fin', '<=', $this->filtro_fecha_fin))
             ->where('nombreConvenio', 'like', '%'.$this->search.'%')
             ->orderBy('updated_at', 'desc')
             ->paginate($this->perPage);
@@ -190,6 +205,16 @@ class ConveniosMain extends Component
         } else {
             $this->carreras = [];
             $this->carrera_id = null;
+        }
+    }
+
+    public function updatedFiltroFacultad($value)
+    {
+        if ($value) {
+            $this->carreras = \App\Models\Carrera::where('facultad_id', $value)->get();
+        } else {
+            $this->carreras = [];
+            $this->filtro_carrera = null;
         }
     }
 
