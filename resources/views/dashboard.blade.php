@@ -118,7 +118,7 @@
                     <!-- Distribución por Facultad -->
                     <div class="bg-white dark:bg-neutral-900 rounded-xl p-4 border border-neutral-200 dark:border-neutral-700 flex flex-col gap-4">
                         <div class="font-semibold mb-2 text-[#003264]">Distribución por Facultad</div>
-                        {{-- Aquí va el gráfico --}}
+                        <canvas id="facultadChart" class="w-full h-64"></canvas>
                     </div>
                     <!-- Acciones Rápidas -->
                     <div class="bg-white dark:bg-neutral-900 rounded-xl p-4 border border-neutral-200 dark:border-neutral-700 flex flex-col gap-3">
@@ -143,6 +143,49 @@
         </div>
 
         <!-- Chart.js para el gráfico de distribución por facultad -->
-
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const ctx = document.getElementById('facultadChart').getContext('2d');
+                const facultadChart = new Chart(ctx, {
+                    type: 'pie',
+                    data: {
+                        labels: Object.keys(@json($facultades)),
+                        datasets: [{
+                            data: Object.values(@json($facultades)),
+                            backgroundColor: [
+                                '#4CAF50', // Ingeniería
+                                '#FF9800', // Ciencias Empresariales
+                                '#2196F3', // Ciencias de la Salud
+                                '#9C27B0', // Educación
+                                '#607D8B'  // Otros
+                            ],
+                            hoverOffset: 10
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    color: '#003264',
+                                    font: {
+                                        size: 14
+                                    }
+                                }
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function (tooltipItem) {
+                                        const value = tooltipItem.raw;
+                                        return `${tooltipItem.label}: ${value}%`;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            });
+        </script>
     </x-layouts.app>
 </div>

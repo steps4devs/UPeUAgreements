@@ -17,6 +17,7 @@
 <script src="https://unpkg.com/filepond@^4/dist/filepond.js"></script>
 <!-- FilePond Plugin for File Type Validation (opcional) -->
 <script src="https://unpkg.com/filepond-plugin-file-validate-type/dist/filepond-plugin-file-validate-type.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 @vite(['resources/css/app.css', 'resources/js/app.js'])
 @fluxAppearance

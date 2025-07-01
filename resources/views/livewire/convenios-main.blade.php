@@ -109,12 +109,12 @@
                 <!-- Fecha Inicio -->
                 <div class="break-words whitespace-normal min-w-0">
                     <span class="md:hidden font-semibold text-gray-500">Inicio: </span>
-                    <span>{{ $convenio->fecha_inicio }}</span>
+                    <span>{{ \Carbon\Carbon::parse($convenio->fecha_inicio)->format('Y-m-d') }}</span>
                 </div>
                 <!-- Fecha Fin -->
                 <div class="break-words whitespace-normal min-w-0">
                     <span class="md:hidden font-semibold text-gray-500">Fin: </span>
-                    <span>{{ $convenio->fecha_fin }}</span>
+                    <span>{{ \Carbon\Carbon::parse($convenio->fecha_fin)->format('Y-m-d') }}</span>
                 </div>
                 <!-- Alcance -->
                 <div class="break-words whitespace-normal min-w-0">

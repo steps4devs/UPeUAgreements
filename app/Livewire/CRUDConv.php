@@ -29,25 +29,39 @@ class CRUDConv extends Component
 
     public function mount($id = null)
     {
-        $this->entidades = Entidad::all();
-        $this->facultades = Facultad::all();
-        $this->carreras = [];
+        $this->entidades = \App\Models\Entidad::all(); // Cargar todas las entidades
+        $this->facultades = \App\Models\Facultad::all(); // Cargar todas las facultades
+        $this->carreras = []; // Inicializar carreras como vacío
+
         if ($id) {
             $this->convenioId = $id;
             $convenio = Convenio::with('documentos')->findOrFail($id);
             $this->nombreConvenio = $convenio->nombreConvenio;
             $this->descripcion = $convenio->descripcion;
-            $this->fecha_inicio = $convenio->fecha_inicio;
-            $this->fecha_fin = $convenio->fecha_fin;
+            $this->fecha_inicio = $convenio->fecha_inicio->format('Y-m-d');
+            $this->fecha_fin = $convenio->fecha_fin->format('Y-m-d');
             $this->estado = $convenio->estado;
             $this->alcance = $convenio->alcance;
-            $this->convenio_id_entidad = $convenio->convenio_id_entidad;
+            $this->convenio_id_entidad = $convenio->convenio_id_entidad; // ID de la entidad seleccionada
             $this->facultad_id = $convenio->facultad_id;
             $this->carrera_id = $convenio->carrera_id;
             $this->archivos_guardados = $convenio->documentos->toArray();
+
+            // Cargar carreras si hay una facultad seleccionada
             if ($this->facultad_id) {
-                $this->carreras = Carrera::where('facultad_id', $this->facultad_id)->get();
+                $this->carreras = \App\Models\Carrera::where('facultad_id', $this->facultad_id)->get();
             }
+        } else {
+            $this->nombreConvenio = '';
+            $this->descripcion = '';
+            $this->fecha_inicio = '';
+            $this->fecha_fin = '';
+            $this->estado = '';
+            $this->alcance = '';
+            $this->convenio_id_entidad = null;
+            $this->facultad_id = null;
+            $this->carrera_id = null;
+            $this->archivos_guardados = [];
         }
     }
 
