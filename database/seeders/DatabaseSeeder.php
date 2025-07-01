@@ -79,8 +79,8 @@ class DatabaseSeeder extends Seeder
         $carreraEjemplo = Carrera::where('nombreCarrera', 'Ingeniería de Sistemas')->first();
         if ($carreraEjemplo) {
             User::factory()->create([
-                'name' => 'gian',
-                'email' => 'gluck.pastor@gmail.com',
+                'name' => 'ladrix',
+                'email' => 'ladrix@gmail.com',
                 'password' => bcrypt('12345678'),
                 'rol' => 'Administrador',
                 'user_carrera_id' => $carreraEjemplo->id,
