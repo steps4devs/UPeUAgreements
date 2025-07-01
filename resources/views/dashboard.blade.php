@@ -38,8 +38,7 @@
                 </div>
             </div>
 
-            <!-- Métricas -->
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 metrics">
                <div class="bg-[#003264] border border-[#003264] rounded-xl p-4">
                     <div class="text-sm text-white font-semibold">Total Convenios</div>
                     <div class="text-2xl font-bold text-white">{{ $totalConvenios ?? 0 }}</div>
@@ -144,6 +143,13 @@
 
         <!-- Chart.js para el gráfico de distribución por facultad -->
         <script>
+            ScrollReveal().reveal('.metrics');
+            ScrollReveal().reveal('.facultadChart', {
+                delay: 200,
+                duration: 800,
+                distance: '50px',
+                origin: 'bottom'
+            });
             document.addEventListener('DOMContentLoaded', function () {
                 const ctx = document.getElementById('facultadChart').getContext('2d');
                 const facultadChart = new Chart(ctx, {

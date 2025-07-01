@@ -76,60 +76,97 @@ new #[Layout('components.layouts.auth')] class extends Component {
     }
 }; ?>
 
-<div class="space-y-4">
-    <div class="mb-2">
-        <img src="/imagen/logo-upu-blanco.png" alt="Logo UPeU" class="mx-auto w-32">
-        <h1 class="fw-bold mt-4 text-3xl" style="color:#e6eaee;">Gestión de Convenios</h1>
+<div class="w-full max-w-md mx-auto flex flex-col items-center justify-center" style="margin-top: -20px;">
+    <div class="mb-5 transform hover:scale-105 transition-transform duration-300">
+        <img src="/imagen/logo-upu-blanco.png" alt="Logo UPeU" class="mx-auto w-40 drop-shadow-lg">
     </div>
 
-    <!-- Mensaje -->
-    <p class="text-lg mb-4">Por favor, identifíquese</p>
+    <!-- Mensaje con animación de typing -->
+    <p class="text-lg mb-6 text-white text-center font-light tracking-wide">
+        <span class="typing-text">Por favor, identifíquese</span>
+    </p>
 
-    <!-- Alerta de error -->
+    <!-- Alerta de error mejorada -->
     @if ($errors->any())
-        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative text-sm">
-            <strong>Error:</strong> Verifique sus credenciales e intente nuevamente.
+        <div class="bg-red-500 bg-opacity-20 backdrop-blur-sm border border-red-400 text-white px-5 py-3 rounded-lg relative text-sm mb-6 w-full max-w-xs animate-pulse">
+            <strong class="block mb-1">¡Error!</strong> Verifique sus credenciales e intente nuevamente.
         </div>
     @endif
 
-    <!-- Formulario -->
-    <form wire:submit.prevent="login" class="space-y-4">
-        <!-- Correo electrónico -->
-        <input type="email" name="email" wire:model="email" placeholder="Correo electrónico"
-            class="w-full px-6 py-3 rounded-full bg-white bg-opacity-100 text-black placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-yellow-400 font-semibold" />
+    <!-- Formulario centrado con efecto de glassmorphism -->
+    <form wire:submit.prevent="login" class="space-y-5 w-full flex flex-col items-center px-12 py-10 rounded-xl">
+        <!-- Campo de correo electrónico -->
+        <div class="w-full relative group">
+            <input type="email" name="email" wire:model="email" placeholder="Usuario"
+                class="w-full h-12 px-5 py-2 rounded-full text-center text-white bg-[rgba(30,30,30,0.5)] 
+                       placeholder-gray-300 focus:outline-none font-normal text-base leading-5
+                       transition-all duration-300 border border-gray-600 focus:border-amber-400
+                       input-focus-effect" />
+            
+            <div class="absolute inset-0 bg-gradient-to-r from-amber-500 to-amber-300 rounded-full opacity-0 
+                        group-hover:opacity-10 -z-10 transition-opacity duration-300"></div>
+                        
+            @error('email')
+                <p class="text-red-300 text-xs mt-2 text-center animate-pulse">{{ $message }}</p>
+            @enderror
+        </div>
 
-        @error('email')
-            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-        @enderror
+        <!-- Campo de contraseña -->
+        <div class="w-full relative group">
+            <input type="password" name="password" wire:model="password" placeholder="Contraseña"
+                class="w-full h-12 px-5 py-2 rounded-full text-center text-white bg-[rgba(30,30,30,0.5)] 
+                       placeholder-gray-300 focus:outline-none font-normal text-base leading-5
+                       transition-all duration-300 border border-gray-600 focus:border-amber-400
+                       input-focus-effect" />
+                       
 
-        <!-- Contraseña -->
-        <input type="password" name="password" wire:model="password" placeholder="Contraseña"
-            class="w-full px-6 py-3 rounded-full bg-white bg-opacity-100 text-black placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-yellow-400 font-semibold" />
+            <div class="absolute inset-0 bg-gradient-to-r from-amber-500 to-amber-300 rounded-full opacity-0 
+                        group-hover:opacity-10 -z-10 transition-opacity duration-300"></div>
+                        
+            @error('password')
+                <p class="text-red-300 text-xs mt-2 text-center animate-pulse">{{ $message }}</p>
+            @enderror
+        </div>
 
-        @error('password')
-            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-        @enderror
-
-        <!-- Botón principal -->
+        <!-- Botón principal con efecto de hover -->
         <button type="submit"
-            class="w-full py-3 rounded-full bg-yellow-400 hover:bg-yellow-300 text-black font-semibold text-lg transition">
-            Iniciar sesión
+            class="w-full h-12 mt-4 py-2 rounded-full bg-gradient-to-r from-amber-500 to-amber-400
+                   hover:from-amber-400 hover:to-amber-500 text-black font-medium text-base
+                   transition-all duration-300 transform hover:scale-105 hover:shadow-lg
+                   hover:shadow-amber-500/20 focus:outline-none focus:ring-2 focus:ring-amber-300">
+            <span class="relative z-10">Iniciar sesión</span>
         </button>
     </form>
 
     <!-- Enlace de recuperación -->
-    <a href="#" class="text-sm underline text-white hover:text-yellow-300 block mt-2">Recuperar contraseña</a>
+    <a href="#" class="text-sm text-gray-300 hover:text-amber-400 block mt-6 text-center transition-colors duration-300">
+        ¿Olvidó su contraseña?
+    </a>
 </div>
 
 <script>
     window.addEventListener('refreshPage', () => {
         window.location.reload();
     });
+    
+    // Efecto de typing para el mensaje de bienvenida
+    document.addEventListener('DOMContentLoaded', function() {
+        const text = "Por favor, identifíquese";
+        const typingElement = document.querySelector('.typing-text');
+        
+        if (typingElement) {
+            typingElement.textContent = '';
+            let i = 0;
+            
+            const typeWriter = () => {
+                if (i < text.length) {
+                    typingElement.textContent += text.charAt(i);
+                    i++;
+                    setTimeout(typeWriter, 80);
+                }
+            };
+            
+            setTimeout(typeWriter, 500);
+        }
+    });
 </script>
-
-
-
-
-
-
-
