@@ -29,9 +29,9 @@ class CRUDConv extends Component
 
     public function mount($id = null)
     {
-        $this->entidades = \App\Models\Entidad::all(); // Cargar todas las entidades
-        $this->facultades = \App\Models\Facultad::all(); // Cargar todas las facultades
-        $this->carreras = []; // Inicializar carreras como vacío
+        $this->entidades = \App\Models\Entidad::all();
+        $this->facultades = \App\Models\Facultad::all();
+        $this->carreras = [];
 
         if ($id) {
             $this->convenioId = $id;
@@ -42,12 +42,10 @@ class CRUDConv extends Component
             $this->fecha_fin = $convenio->fecha_fin->format('Y-m-d');
             $this->estado = $convenio->estado;
             $this->alcance = $convenio->alcance;
-            $this->convenio_id_entidad = $convenio->convenio_id_entidad; // ID de la entidad seleccionada
+            $this->convenio_id_entidad = $convenio->convenio_id_entidad;
             $this->facultad_id = $convenio->facultad_id;
             $this->carrera_id = $convenio->carrera_id;
             $this->archivos_guardados = $convenio->documentos->toArray();
-
-            // Cargar carreras si hay una facultad seleccionada
             if ($this->facultad_id) {
                 $this->carreras = \App\Models\Carrera::where('facultad_id', $this->facultad_id)->get();
             }

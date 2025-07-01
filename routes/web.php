@@ -14,7 +14,7 @@ Route::get('/', function () {
     return view('welcome');
 })->name('home');
 
-Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
+Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');   
 
 Route::middleware(['auth'])->group(function () {
     Route::redirect('settings', 'settings/profile');
@@ -23,7 +23,10 @@ Route::middleware(['auth'])->group(function () {
     Volt::route('settings/password', 'settings.password')->name('settings.password');
     Volt::route('settings/appearance', 'settings.appearance')->name('settings.appearance');
     Route::get('convenios', ConveniosMain::class)->name('convenios-main');
-    Route::get('entidades', EntidadesMain::class)->name('entidades-main');
+    Route::get('entidades', \App\Livewire\EntidadesMain::class)->name
+    ('entidades-main'); // Página principal de entidades
+    Route::get('entidades/crear', \App\Livewire\EntidadesCRUD::class)->name('entidades.create'); // Página para crear entidades
+    Route::get('entidades/{id}/editar', \App\Livewire\EntidadesCRUD::class)->name('entidades.edit'); // Página para editar entidades
     Route::get('reportes', ReportesMain::class)->name('reportes-main');
     Route::get('instituciones', InstitucionesMain::class)->name('instituciones-main');
     Route::get('configuracion', ConfiguracionMain::class)->name('configuracion-main');

@@ -15,16 +15,16 @@
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <!-- Columna principal -->
+
         <div class="md:col-span-2 space-y-6">
-            <!-- Estado y fechas -->
+
             <div class="flex items-center gap-3">
                 <span class="inline-block w-3 h-3 rounded-full {{ $convenio->estado === 'Vigente' ? 'bg-green-500' : ($convenio->estado === 'Por vencer' ? 'bg-yellow-400' : 'bg-red-500') }}"></span>
                 <span class="font-semibold">{{ $convenio->estado }}</span>
                 <span class="text-xs text-gray-400 ml-2">Última actualización: {{ $convenio->updated_at->format('d/m/Y') }}</span>
             </div>
 
-            <!-- Información General -->
+
             <div class="bg-white rounded-lg shadow p-6">
                 <h3 class="font-bold text-lg mb-2">Información General</h3>
                 <div class="mb-2">
@@ -93,7 +93,6 @@
                 </div>
             </div>
 
-            <!-- Documentos -->
             <div class="bg-white rounded-lg shadow p-6">
                 <h3 class="font-bold text-lg mb-2">Documentos</h3>
                 @forelse($convenio->documentos as $doc)
@@ -137,9 +136,8 @@
             </div>
         </div>
 
-        <!-- Columna lateral -->
         <div class="space-y-6">
-            <!-- Estado y Fechas -->
+
             <div class="bg-green-50 rounded-lg shadow p-4">
                 <div class="font-bold text-green-700 mb-2">Estado actual: {{ $convenio->estado }}</div>
                 <div class="text-sm mb-1">Fecha de inicio: <span class="font-semibold">{{ \Carbon\Carbon::parse($convenio->fecha_inicio)->format('d/m/Y') }}</span></div>
@@ -153,7 +151,6 @@
                 </div>
             </div>
 
-            <!-- Responsables -->
             <div class="bg-white rounded-lg shadow p-4">
                 <div class="font-bold mb-2">Responsables</div>
                 <div class="mb-2">
@@ -170,7 +167,6 @@
                 </div>
             </div>
 
-            <!-- Facultades Involucradas -->
             <div class="bg-blue-50 rounded-lg shadow p-4">
                 <div class="font-bold mb-2">Facultades Involucradas</div>
                 @if($convenio->facultad)

@@ -8,68 +8,60 @@
     </div>
 
     <div class="flex flex-col sm:flex-row mb-4 gap-2">
-        <input wire:model.live="search" type="text" placeholder="Buscar convenio..." class="border rounded px-3 py-2 w-full sm:w-1/3 text-sm">
-        <select wire:model="perPage" class="border rounded px-2 py-2 w-24 text-sm">
-            <option value="5">5</option>
-            <option value="10">10</option>
-            <option value="25">25</option>
-        </select>
+        <flux:input wire:model.live="search" type="text" placeholder="Buscar convenio..." icon:trailing="loading"/>
+        <flux:select wire:model="perPage" class="border rounded px-2 py-2 w-24 text-sm w-min">
+            <flux:select.option value="5">5</flux:select.option>
+            <flux:select.option value="10">10</flux:select.option>
+            <flux:select.option value="25">25</flux:select.option>
+        </flux:select>
     </div>
-
-    <!-- Filtros avanzados -->
     <div class="flex flex-col sm:flex-row flex-wrap gap-2 mb-4">
-        <!-- Estado -->
-        <select wire:model.live="filtro_estado" class="border rounded px-2 py-2 text-sm w-full sm:w-auto">
-            <option value="">Todos los estados</option>
-            <option value="Vigente">Vigente</option>
-            <option value="Por vencer">Por vencer</option>
-            <option value="Vencido">Vencido</option>
-        </select>
+        <flux:select wire:model.live="filtro_estado" class="border rounded px-2 py-2 text-sm w-full sm:w-auto">
+            <flux:select.option value="">Todos los estados</flux:select.option>
+            <flux:select.option value="Vigente">Vigente</flux:select.option>
+            <flux:select.option value="Por vencer">Por vencer</flux:select.option>
+            <flux:select.option value="Vencido">Vencido</flux:select.option>
+        </flux:select>
 
-        <!-- Entidad -->
-        <select wire:model.live="filtro_entidad" class="border rounded px-2 py-2 text-sm w-full sm:w-auto">
-            <option value="">Todas las entidades</option>
+        <flux:select wire:model.live="filtro_entidad" class="border rounded px-2 py-2 text-sm w-full sm:w-auto">
+            <flux:select.option value="">Todas las entidades</flux:select.option>
             @foreach($entidades as $entidad)
-                <option value="{{ $entidad->id }}">{{ $entidad->nombreEntidad }}</option>
+                <flux:select.option value="{{ $entidad->id }}">{{ $entidad->nombreEntidad }}</flux:select.option>
             @endforeach
-        </select>
+        </flux:select>
 
-        <!-- Alcance -->
-        <select wire:model.live="filtro_alcance" class="border rounded px-2 py-2 text-sm w-full sm:w-auto">
-            <option value="">Todos los alcances</option>
-            <option value="Carrera">Carrera</option>
-            <option value="Facultad">Facultad</option>
-            <option value="Universidad">Universidad</option>
-        </select>
 
-        <!-- Facultad (solo si el alcance es Carrera o Facultad) -->
+
+        <flux:select wire:model.live="filtro_alcance" class="border rounded px-2 py-2 text-sm w-full sm:w-auto">
+            <flux:select.option value="">Todos los alcances</flux:select.option>
+            <flux:select.option value="Carrera">Carrera</flux:select.option>
+            <flux:select.option value="Facultad">Facultad</flux:select.option>
+            <flux:select.option value="Universidad">Universidad</flux:select.option>
+        </flux:select>
+
         @if($filtro_alcance === 'Carrera' || $filtro_alcance === 'Facultad')
-            <select wire:model.live="filtro_facultad" class="border rounded px-2 py-2 text-sm w-full sm:w-auto">
-                <option value="">Todas las facultades</option>
+            <flux:select wire:model.live="filtro_facultad" class="border rounded px-2 py-2 text-sm w-full sm:w-auto">
+                <flux:select.option value="">Todas las facultades</flux:select.option>
                 @foreach($facultades as $facultad)
-                    <option value="{{ $facultad->id }}">{{ $facultad->nombreFacultad }}</option>
+                    <flux:select.option value="{{ $facultad->id }}">{{ $facultad->nombreFacultad }}</flux:select.option>
                 @endforeach
-            </select>
+            </flux:select>
         @endif
 
-        <!-- Carrera (solo si el alcance es Carrera y hay facultad seleccionada) -->
         @if($filtro_alcance === 'Carrera' && $filtro_facultad)
-            <select wire:model.live="filtro_carrera" class="border rounded px-2 py-2 text-sm w-full sm:w-auto">
-                <option value="">Todas las carreras</option>
+            <flux:select wire:model.live="filtro_carrera" class="border rounded px-2 py-2 text-sm w-full sm:w-auto">
+                <flux:select.option value="">Todas las carreras</flux:select.option>
                 @foreach($carreras as $carrera)
-                    <option value="{{ $carrera->id }}">{{ $carrera->nombreCarrera }}</option>
+                    <flux:select.option value="{{ $carrera->id }}">{{ $carrera->nombreCarrera }}</flux:select.option>
                 @endforeach
-            </select>
+            </flux:select>
         @endif
 
-        <!-- Fecha Inicio -->
-        <input type="date" wire:model.live="filtro_fecha_inicio" class="border rounded px-2 py-2 text-sm w-full sm:w-auto" placeholder="Desde">
+        <flux:input type="date" wire:model.live="filtro_fecha_inicio" class=" text-sm w-full sm:w-auto" placeholder="Desde"/>
 
-        <!-- Fecha Fin -->
-        <input type="date" wire:model.live="filtro_fecha_fin" class="border rounded px-2 py-2 text-sm w-full sm:w-auto" placeholder="Hasta">
+        <flux:input type="date" wire:model.live="filtro_fecha_fin" class=" text-sm w-full sm:w-auto" placeholder="Hasta"/>
     </div>
 
-    <!-- Encabezados (solo desktop) -->
     <div class="hidden md:grid grid-cols-9 gap-2 bg-gray-100 rounded-t-lg px-2 sm:px-4 py-2 font-semibold text-xs sm:text-sm">
         <div class="truncate">Nombre</div>
         <div class="truncate">Estado</div>
@@ -82,20 +74,19 @@
         <div class="truncate">Acciones</div>
     </div>
 
-    <!-- Filas -->
     <div class="divide-y">
         @forelse($convenios as $convenio)
             <div wire:key="convenio-{{ $convenio->id }}" class="grid grid-cols-1 md:grid-cols-9 gap-2 items-center px-2 sm:px-4 py-3 hover:bg-gray-50 text-xs sm:text-sm">
-                <!-- Nombre -->
+
                 <div class="break-words whitespace-normal min-w-0" title="{{ $convenio->nombreConvenio }}">
                     <span class="md:hidden font-semibold text-gray-500">Nombre: </span>
                     <span class="font-medium">{{ $convenio->nombreConvenio }}</span>
                 </div>
-                <!-- Estado -->
+
                 <div>
                     <span class="md:hidden font-semibold text-gray-500">Estado: </span>
                     <span class="inline-flex items-center px-2 py-1 rounded text-xs
-                        @if($convenio->estado == 'Vigente')
+                    @if($convenio->estado == 'Vigente')
                             bg-green-100 text-green-700
                         @elseif($convenio->estado == 'Por vencer')
                             bg-yellow-100 text-yellow-700
@@ -106,37 +97,32 @@
                         {{ $convenio->estado }}
                     </span>
                 </div>
-                <!-- Fecha Inicio -->
+
                 <div class="break-words whitespace-normal min-w-0">
                     <span class="md:hidden font-semibold text-gray-500">Inicio: </span>
                     <span>{{ \Carbon\Carbon::parse($convenio->fecha_inicio)->format('Y-m-d') }}</span>
                 </div>
-                <!-- Fecha Fin -->
+
                 <div class="break-words whitespace-normal min-w-0">
                     <span class="md:hidden font-semibold text-gray-500">Fin: </span>
                     <span>{{ \Carbon\Carbon::parse($convenio->fecha_fin)->format('Y-m-d') }}</span>
                 </div>
-                <!-- Alcance -->
                 <div class="break-words whitespace-normal min-w-0">
                     <span class="md:hidden font-semibold text-gray-500">Alcance: </span>
                     <span>{{ $convenio->alcance }}</span>
                 </div>
-                <!-- Entidad -->
                 <div class="break-words whitespace-normal min-w-0" title="{{ $convenio->entidad->nombreEntidad ?? '' }}">
                     <span class="md:hidden font-semibold text-gray-500">Entidad: </span>
                     <span>{{ $convenio->entidad->nombreEntidad ?? '' }}</span>
                 </div>
-                <!-- Facultad -->
                 <div class="break-words whitespace-normal min-w-0" title="{{ $convenio->facultad->nombreFacultad ?? '' }}">
                     <span class="md:hidden font-semibold text-gray-500">Facultad: </span>
                     <span>{{ $convenio->facultad->nombreFacultad ?? '' }}</span>
                 </div>
-                <!-- Carrera -->
                 <div class="break-words whitespace-normal min-w-0" title="{{ $convenio->carrera->nombreCarrera ?? '' }}">
                     <span class="md:hidden font-semibold text-gray-500">Carrera: </span>
                     <span>{{ $convenio->carrera->nombreCarrera ?? '' }}</span>
                 </div>
-                <!-- Acciones -->
                 <div class="flex flex-wrap gap-1 justify-start md:justify-center mt-2 md:mt-0">
                     <a href="{{ route('convenios.detalle', $convenio->id) }}" 
                        class="text-green-600 hover:text-green-900 p-2 rounded-full hover:bg-green-100 transition" 
@@ -163,7 +149,6 @@
         {{ $convenios->links() }}
     </div>
 
-    <!-- Modal -->
     @if($modalOpen)
     <div class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
         <div class="bg-white rounded-lg shadow-lg w-full max-w-3xl p-4 sm:p-6">
@@ -234,12 +219,11 @@
                             </div>
                         @endif
                     </div>
-                    <!-- Espacio para subir archivos de cláusulas -->
+                    
                     <div class="bg-gray-50 rounded-lg p-4 border border-gray-200 flex flex-col">
                         <label class="block text-sm font-medium mb-2">Cláusulas (archivos)</label>
                         <input type="file" multiple wire:model="clausulas" id="clausulas" class="mb-2">
 
-                        <!-- Barra de progreso -->
                         <div x-data="{ progress: 0 }"
                              x-on:livewire-upload-start="progress = 0"
                              x-on:livewire-upload-finish="progress = 0"

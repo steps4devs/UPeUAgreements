@@ -2,7 +2,7 @@
     <form wire:submit.prevent="save" class="bg-white rounded-lg shadow-lg p-8 space-y-8">
         <h2 class="text-2xl font-bold text-[#003264] mb-4">{{ $convenioId ? 'Editar Convenio' : 'Crear Convenio' }}</h2>
         <div class="grid md:grid-cols-2 gap-6">
-            <!-- Columna izquierda -->
+
             <div class="space-y-6">
                 <div>
                     <label class="block text-sm font-semibold text-[#003264] mb-1">Nombre del convenio</label>
@@ -26,7 +26,7 @@
                 </div>
             </div>
 
-            <!-- Columna derecha -->
+
             <div class="space-y-6">
                 <div class="flex flex-col sm:flex-row gap-4">
                     <div class="w-full sm:w-1/2">
@@ -40,6 +40,8 @@
                         @error('fecha_fin') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                     </div>
                 </div>
+
+
                 <div>
                     <label class="block text-sm font-semibold text-[#003264] mb-1">Alcance</label>
                     <select wire:model.live="alcance" class="form-input w-full border border-neutral-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#0097ff] focus:outline-none">
@@ -50,10 +52,11 @@
                     </select>
                     @error('alcance') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                 </div>
+
                 @if($alcance === 'Carrera' || $alcance === 'Facultad')
                 <div>
                     <label class="block text-sm font-semibold text-[#003264] mb-1">Facultad</label>
-                    <select wire:model="facultad_id" class="form-input w-full border border-neutral-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#0097ff] focus:outline-none">
+                    <select wire:model.live="facultad_id" class="form-input w-full border border-neutral-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#0097ff] focus:outline-none">
                         <option value="">Seleccione una facultad</option>
                         @foreach($facultades as $facultad)
                             <option value="{{ $facultad->id }}">{{ $facultad->nombreFacultad }}</option>
@@ -77,18 +80,16 @@
             </div>
         </div>
 
-        <!-- Botones -->
         <div class="flex justify-end gap-4 mt-8">
             <button type="button" onclick="window.history.back()" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 hover:text-gray-900 transition text-sm">Cancelar</button>
             <button type="submit" class="px-4 py-2 bg-[#0097ff] text-white rounded-lg hover:bg-[#007acc] transition text-sm">Guardar</button>
         </div>
     </form>
 
-    <!-- Documentos -->
     <div class="bg-gray-50 rounded-lg p-6 border border-gray-200 mt-6">
         <label class="block text-lg font-semibold text-[#003264] mb-4">Documentos</label>
         <p class="text-sm text-gray-500 mb-4">Puede adjuntar documentos relacionados con el convenio.</p>
-        <!-- Archivos guardados -->
+
         @if($archivos_guardados)
             <div class="space-y-4 mb-4">
                 @foreach($archivos_guardados as $doc)
@@ -108,7 +109,6 @@
             </div>
         @endif
 
-        <!-- Uploader fuera del form -->
         <livewire:documento-uploader :convenio-id="$convenioId" />
     </div>
 </div>
