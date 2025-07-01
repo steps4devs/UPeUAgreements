@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
-            $table->enum('rol', ['Coordinador', 'Administrador', 'Consulta']);
+            $table->enum('rol', ['Administrador', 'Coordinador','Secretaria']);
             $table->string('password');
             $table->unsignedBigInteger('user_carrera_id');
             $table->foreign('user_carrera_id')->references('id')->on('carreras');

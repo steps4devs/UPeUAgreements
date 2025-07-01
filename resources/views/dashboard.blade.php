@@ -1,4 +1,4 @@
-<div class="min-h-screen w-full bg-[#f6f8ff]">
+<div class="min-h-screen w-full bg-[#EEF1F6]">
     <x-layouts.app :title="('Dashboard')">
         <!-- Barra superior -->
         <div class="flex items-center justify-between w-full px-6 py-0.2">
@@ -7,7 +7,7 @@
                     <input
                         type="text"
                         placeholder="Buscar convenios, entidades, documentos..."
-                        class="w-full pl-4 pr-10 py-1.5 rounded-full border border-neutral-300 focus:outline-none focus:ring-2 focus:ring-[#003264] text-sm"
+                        class="w-full pl-4 pr-10 py-1.5 rounded-full border bg-white border-neutral-300 focus:outline-none focus:ring-2 focus:ring-[#003264] text-sm"
                     />
                     <span class="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -38,24 +38,25 @@
                 </div>
             </div>
 
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 metrics">
-               <div class="bg-[#003264] border border-[#003264] rounded-xl p-4">
+            <!-- Métricas -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+               <div class="bg-[#003264] border border-[#003264] rounded-xl p-4 shadow-lg hover:shadow-2xl transition-shadow duration-300 ease-in-out transform hover:scale-101 text-sm">
                     <div class="text-sm text-white font-semibold">Total Convenios</div>
                     <div class="text-2xl font-bold text-white">{{ $totalConvenios ?? 0 }}</div>
                     <div class="text-xs text-[#0097ff] mt-1">+12% desde el mes pasado</div>
                 </div>
 
-                <div class="bg-white border border-white rounded-xl p-4">
+                <div class="bg-white border border-white rounded-xl p-4 shadow-lg hover:shadow-2xl transition-shadow duration-300 ease-in-out transform hover:scale-101 text-sm">
                     <div class="text-sm text-[#003264] font-semibold">Convenios Activos</div>
                     <div class="text-2xl font-bold text-[#003264]">{{ $conveniosActivos ?? 0 }}</div>
                     <div class="text-xs text-[#00b738] mt-1">{{ $porcentajeActivos ?? 0 }}% del total</div>
                 </div>
-                <div class="bg-[#fff7e6] border border-[#ff8d00] rounded-xl p-4">
+                <div class="bg-[#fff7e6] border border-[#ff8d00] rounded-xl p-4 shadow-lg hover:shadow-2xl transition-shadow duration-300 ease-in-out transform hover:scale-101 text-sm">
                     <div class="text-sm text-[#003264] font-semibold">Por Vencer</div>
                     <div class="text-2xl font-bold text-[#003264]">{{ $porVencer ?? 0 }}</div>
                     <div class="text-xs text-[#ff8d00] mt-1">Próximos 30 días</div>
                 </div>
-                <div class="bg-[#f7ecff] border border-[#944dd5] rounded-xl p-4">
+                <div class="bg-[#f7ecff] border border-[#944dd5] rounded-xl p-4 shadow-lg hover:shadow-2xl transition-shadow duration-300 ease-in-out transform hover:scale-101 text-sm">
                     <div class="text-sm text-[#003264] font-semibold">Entidades Asociadas</div>
                     <div class="text-2xl font-bold text-[#003264]">{{ $entidadesAsociadas ?? 0 }}</div>
                     <div class="text-xs text-[#944dd5] mt-1">+3 este mes</div>
@@ -65,10 +66,10 @@
             <!-- Últimos Convenios y Distribución -->
             <div class="flex flex-col md:flex-row gap-6">
                 <!-- Últimos Convenios -->
-                <div class="flex-1 bg-white dark:bg-neutral-900 rounded-xl p-4 border border-[#003264] dark:border-[#003264]">
+                <div class="flex-1 bg-white dark:bg-neutral-900 rounded-xl p-4 border border-[#003264] dark:border-[#003264] shadow-md hover:shadow-lg transition-shadow duration-300 ease-in-out">
                     <div class="flex items-center justify-between mb-4">
                         <div class="font-semibold text-[#003264] text-lg">Últimos Convenios</div>
-                        <a href="{{ route('convenios-main') }}" 
+                        <a href="{{ route('convenios-main') }}"
                            class="px-4 py-2 bg-[#0097ff] text-white rounded-full font-medium hover:bg-[#007acc] transition text-sm">
                             Ver todos
                         </a>
@@ -115,16 +116,20 @@
                 <!-- Distribución por Facultad y Acciones Rápidas -->
                 <div class="w-full md:w-80 flex flex-col gap-4">
                     <!-- Distribución por Facultad -->
-                    <div class="bg-white dark:bg-neutral-900 rounded-xl p-4 border border-neutral-200 dark:border-neutral-700 flex flex-col gap-4">
+                    <div class="bg-white dark:bg-neutral-900 rounded-xl p-4 border border-neutral-200 dark:border-neutral-700 flex flex-col gap-4 shadow-md hover:shadow-lg transition-shadow duration-300 ease-in-out">
                         <div class="font-semibold mb-2 text-[#003264]">Distribución por Facultad</div>
-                        <canvas id="facultadChart" class="w-full h-64"></canvas>
+                        <!-- Aquí agregamos el canvas para el gráfico -->
+                        <div class="facultadChart">
+                            <canvas id="facultadChart" height="220"></canvas>
+                        </div>
                     </div>
                     <!-- Acciones Rápidas -->
-                    <div class="bg-white dark:bg-neutral-900 rounded-xl p-4 border border-neutral-200 dark:border-neutral-700 flex flex-col gap-3">
+                    <div class="bg-white dark:bg-neutral-900 rounded-xl p-4 border border-neutral-200 dark:border-neutral-700 flex flex-col gap-3 shadow-md hover:shadow-lg transition-shadow duration-300 ease-in-out">
                         <div class="font-semibold mb-2 text-[#003264]">Acciones Rápidas</div>
                         @if(Auth::user()->rol === 'Administrador' || Auth::user()->rol === 'Sheridan')
                             <a href="{{ route('convenios.create') }}"
-                               class="w-full h-9 flex items-center justify-center border border-[#0097ff] text-black bg-white hover:bg-[#0097ff] hover:text-white rounded-full font-medium transition text-sm">
+                                class="w-full md:w-full h-9 flex items-center justify-center border border-[#0097ff] text-white bg-[#0097ff] hover:bg-white hover:text-black rounded-full font-medium transition-all duration-200 ease-in-out transform hover:scale-101 text-sm gap-2">
+                                <x-heroicon-o-plus class="w-6 h-6"/>
                                 Nuevo Convenio
                             </a>
                         @endif
