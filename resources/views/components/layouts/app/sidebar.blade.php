@@ -4,7 +4,7 @@
         @include('partials.head')
     </head>
     <body class="min-h-screen bg-[#EEF1F6] dark:bg-zinc-800">
-        <flux:sidebar sticky stashable class="border-e border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
+        <flux:sidebar sticky stashable class="border-e border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900 hidden lg:block">
             <flux:sidebar.toggle class="lg:hidden" icon="x-mark" />
 
             <a href="{{ route('dashboard') }}" class="me-5 flex items-center space-x-2 rtl:space-x-reverse" wire:navigate>
@@ -14,32 +14,16 @@
             <flux:navlist variant="outline">
                 <flux:navlist.group :heading="('Platform')" class="grid">
                     <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>{{ __('Dashboard') }}</flux:navlist.item>
-
-                    <!-- two nav item like this <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>{{ __('Dashboard') }}</flux:navlist.item>-->
-
                     <flux:navlist.item icon="academic-cap" :href="route('convenios-main')" :current="request()->routeIs('convenios-main')" wire:navigate>{{ __('Convenios') }}</flux:navlist.item>
-
                     <flux:navlist.item icon="building-office" :href="route('entidades-main')" :current="request()->routeIs('entidades-main')" wire:navigate>{{ __('Entidades') }}</flux:navlist.item>
                     <flux:navlist.item icon="document" :href="route('reportes-main')" :current="request()->routeIs('reportes-main')" wire:navigate>{{ __('Reportes') }}</flux:navlist.item>
                     <flux:navlist.item icon="cog-8-tooth" :href="route('configuracion-main')" :current="request()->routeIs('configuracion-main')" wire:navigate>{{ __('Configuración') }}</flux:navlist.item>
-
                 </flux:navlist.group>
             </flux:navlist>
 
             <flux:spacer />
 
-            <flux:navlist variant="outline">
-                <flux:navlist.item icon="folder-git-2" href="https://github.com/laravel/livewire-starter-kit" target="_blank">
-                {{ __('Repository') }}
-                </flux:navlist.item>
-
-                <flux:navlist.item icon="book-open-text" href="https://laravel.com/docs/starter-kits#livewire" target="_blank">
-                {{ __('Documentation') }}
-                </flux:navlist.item>
-            </flux:navlist>
-
-            <!-- Desktop User Menu -->
-            <flux:dropdown position="bottom" align="start">
+            <flux:dropdown position="top" align="start">
                 <flux:profile
                     :name="auth()->user()->name"
                     :initials="auth()->user()->initials()"
@@ -133,6 +117,11 @@
                 </flux:menu>
             </flux:dropdown>
         </flux:header>
+
+        <div class="z-10 fixed inset-0 bg-black/10 hidden [[data-show-stashed-sidebar]_&]:block lg:[[data-show-stashed-sidebar]_&]:hidden" 
+             x-data="" 
+             x-on:click="document.body.removeAttribute('data-show-stashed-sidebar')">
+        </div>
 
         {{ $slot }}
 

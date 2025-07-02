@@ -1,10 +1,13 @@
 <div class="w-full p-2 sm:p-4 md:p-6 bg-white rounded-lg shadow">
     <div class="flex flex-col md:flex-row md:justify-between md:items-center mb-4 gap-2">
         <h2 class="text-xl sm:text-2xl font-bold">Gestión de Entidades</h2>
-        <a href="{{ route('entidades.create') }}" class="flex items-center justify-center px-3 py-2 sm:px-4 sm:py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm sm:text-base">
-            <x-heroicon-o-plus class="w-6 h-6 sm:w-5 sm:h-5 mr-2"/>
-            Nueva Entidad
-        </a>
+
+
+        <a href="{{ route('entidades.create') }}"
+                class="w-full md:w-44 h-9 flex items-center justify-center border border-[#0097ff] text-white bg-[#0097ff] hover:bg-white hover:text-black rounded-full font-medium transition-all duration-200 ease-in-out transform hover:scale-105 text-sm gap-2">
+                <x-heroicon-o-plus class="w-6 h-6"/>
+                Nueva entidad
+            </a>
     </div>
 
     <div class="flex flex-col sm:flex-row mb-4 gap-2">

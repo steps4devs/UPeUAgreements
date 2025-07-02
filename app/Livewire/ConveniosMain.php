@@ -119,7 +119,6 @@ class ConveniosMain extends Component
         try {
             $this->validate();
 
-            // Calcular estado
             $estado = null;
             if ($this->fecha_fin) {
                 $hoy = now()->startOfDay();

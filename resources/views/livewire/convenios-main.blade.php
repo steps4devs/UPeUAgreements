@@ -1,36 +1,36 @@
 
-<div class="w-full min-h-screen">
-    <div class="max-w-7xl mx-auto">
-        <div class="flex flex-col md:flex-row md:justify-between md:items-center mb-6 gap-2">
-            <h2 class="text-2xl font-bold text-[#003264]">Gestión de Convenios</h2>
+<div class="w-full min-h-screen lg:pl-64">
+    <div class="max-w-7xl mx-auto px-4">
+        <div class="flex flex-col gap-6 mb-6">
+            <h2 class="text-2xl font-bold text-[#003264] w-full">Gestión de Convenios</h2>
 
-            <!-- Buscador central -->
-            <div class="flex-1 flex justify-center order-3 md:order-none my-2 md:my-0">
-                <div class="relative w-full max-w-[400px]">
+            <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
+
+                <div class="relative w-full md:w-2/3">
                     <input
                         type="text"
                         placeholder="Buscar convenios, entidades, documentos..."
                         class="w-full pl-4 pr-10 py-1.5 rounded-full border bg-white border-neutral-300 focus:outline-none focus:ring-2 focus:ring-[#003264] text-sm"
-                        wire:model.debounce.500ms="search"
+                        wire:model.live="search"
                     />
-                    <span class="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400">
+                    <!-- Span con breakpoints -->
+                    <span class="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hidden lg:inline">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 104.5 4.5a7.5 7.5 0 0012.15 12.15z" />
                         </svg>
                     </span>
                 </div>
-            </div>
 
-            <a href="{{ route('convenios.create') }}"
-                class="w-full md:w-44 h-9 flex items-center justify-center border border-[#0097ff] text-white bg-[#0097ff] hover:bg-white hover:text-black rounded-full font-medium transition-all duration-200 ease-in-out transform hover:scale-105 text-sm gap-2">
-                <x-heroicon-o-plus class="w-6 h-6"/>
-                Nuevo Convenio
-            </a>
+                <a href="{{ route('convenios.create') }}"
+                    class="w-full md:w-44 h-9 flex items-center justify-center border border-[#0097ff] text-white bg-[#0097ff] hover:bg-white hover:text-black rounded-full font-medium transition-all duration-200 ease-in-out transform hover:scale-105 text-sm gap-2">
+                    <x-heroicon-o-plus class="w-6 h-6"/>
+                    Nuevo Convenio
+                </a>
+            </div>
         </div>
 
         <!-- Filtros -->
         <div class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 ease-in-out p-4 mb-6">
-
             <h3 class="text-lg font-semibold text-[#003264] mb-4">Filtros</h3>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
