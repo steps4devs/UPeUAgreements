@@ -33,7 +33,9 @@
             <div wire:key="entidad-{{ $entidad->id }}" class="grid grid-cols-1 md:grid-cols-5 gap-2 items-center px-2 sm:px-4 py-3 hover:bg-gray-50 text-xs sm:text-sm">
                 <div class="flex items-center justify-center">
                     @if($entidad->logo)
-                        <img src="{{ asset('storage/' . $entidad->logo) }}" alt="Logo" class="w-10 h-10 rounded">
+                        <img src="{{ asset('storage/' . $entidad->logo) }}" 
+                             alt="Logo de {{ $entidad->nombreEntidad }}" 
+                             class="w-24 h-24 sm:w-32 sm:h-32 md:w-24 md:h-24 lg:w-32 lg:h-32 rounded-full border border-gray-300 shadow-sm">
                     @else
                         <span class="text-gray-500">Sin logo</span>
                     @endif
