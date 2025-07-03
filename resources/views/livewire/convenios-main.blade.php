@@ -319,55 +319,64 @@
         @endif
 
         @if($modalEditArchivosOpen)
-        <div class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
-            <div class="bg-white rounded-lg shadow-lg w-full max-w-xl p-4">
-                <h3 class="text-lg font-semibold mb-4">Editar Archivos del Convenio</h3>
-                @if($archivos_guardados)
-                    <div class="space-y-2 mb-4">
-                        @foreach($archivos_guardados as $doc)
-                            <div class="flex items-center gap-2 bg-white rounded shadow px-2 py-1">
-                                <x-heroicon-o-document class="w-5 h-5"/>
-                                <span class="truncate text-xs">{{ $doc['nombreArchivo'] }}</span>
-                                <a href="{{ route('clausulas.descargar', $doc['id']) }}" target="_blank" class="text-blue-600 hover:text-blue-800" title="Descargar archivo">
-                                    <x-heroicon-o-arrow-down-tray class="w-5 h-5"/>
-                                </a>
-                                <button type="button"
-                                    class="text-red-600 hover:text-red-800"
-                                    wire:click="eliminarArchivoGuardado({{ $doc['id'] }})"
-                                    title="Eliminar archivo">
-                                    <x-heroicon-o-trash class="w-5 h-5"/>
-                                </button>
-                            </div>
-                        @endforeach
-                    </div>
-                @endif
+    <div class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
+        <div class="bg-white rounded-lg shadow-lg w-full max-w-xl p-4">
+            <h3 class="font-bold text-lg mb-4 text-[#003264]">Editar Archivos del Convenio</h3>
 
-                <input type="file" multiple wire:model="clausulas" class="mb-2">
+            <!-- Subir nuevos archivos -->
+            <div class="border-2 border-dashed border-[#DEDAFF] rounded-lg flex flex-col items-center justify-center py-10 px-4 mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-[#003264] mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 16v-8m0 0l-4 4m4-4l4 4M4 20h16" />
+                </svg>
+                <span class="block text-base text-[#003264] font-semibold mb-2">Arrastre y suelte archivos aquí o</span>
+                <input type="file" multiple wire:model="clausulas" class="hidden" id="clausulas-modal">
+                <label for="clausulas-modal" class="cursor-pointer inline-flex items-center justify-center w-full border border-neutral-300 rounded-lg px-4 py-2 bg-white text-sm text-[#003264] hover:bg-[#f0f8ff] hover:border-[#0097ff] transition">
+                    Seleccionar archivos
+                </label>
                 @error('clausulas.*') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+            </div>
 
-                @if($clausulas_acumuladas)
-                    <div class="space-y-2 mt-2">
-                        @foreach($clausulas_acumuladas as $key => $archivo)
-                            <div class="flex items-center gap-2 bg-white rounded shadow px-2 py-1">
-                                <x-heroicon-o-document class="w-5 h-5"/>
-                                <span class="truncate text-xs">{{ $archivo->getClientOriginalName() }}</span>
-                                <button type="button"
-                                    class="text-red-600 hover:text-red-800"
-                                    wire:click="eliminarArchivo({{ $key }})"
-                                    title="Eliminar archivo">
-                                    <x-heroicon-o-trash class="w-5 h-5"/>
-                                </button>
-                            </div>
-                        @endforeach
+            <!-- Mostrar barra de progreso -->
+            <div x-data="{ progress: 0 }"
+                 x-on:livewire-upload-start="progress = 0"
+                 x-on:livewire-upload-finish="progress = 0"
+                 x-on:livewire-upload-error="progress = 0"
+                 x-on:livewire-upload-progress="progress = $event.detail.progress"
+                 class="w-full mt-2">
+                <template x-if="progress > 0">
+                    <div class="w-full bg-gray-200 rounded h-2">
+                        <div class="bg-blue-600 h-2 rounded" :style="'width: ' + progress + '%'"></div>
                     </div>
-                @endif
+                </template>
+            </div>
 
-                <div class="flex justify-end space-x-2 mt-4">
-                    <button type="button" wire:click="cerrarModalEditArchivos" class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 text-sm">Cancelar</button>
-                    <button type="button" wire:click="guardarNuevosArchivos" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm">Guardar Cambios</button>
+            <!-- Mostrar documentos subidos -->
+            @if($archivos_guardados)
+                <div class="space-y-2 mt-4">
+                    @foreach($archivos_guardados as $doc)
+                        <div class="flex items-center gap-2 bg-white rounded shadow px-2 py-1">
+                            <x-heroicon-o-document class="w-5 h-5"/>
+                            <span class="truncate text-xs">{{ $doc['nombreArchivo'] }}</span>
+                            <a href="{{ route('clausulas.descargar', $doc['id']) }}" target="_blank" class="text-blue-600 hover:text-blue-800" title="Descargar archivo">
+                                <x-heroicon-o-arrow-down-tray class="w-5 h-5"/>
+                            </a>
+                            <button type="button"
+                                class="text-red-600 hover:text-red-800"
+                                wire:click="eliminarArchivoGuardado({{ $doc['id'] }})"
+                                title="Eliminar archivo">
+                                <x-heroicon-o-trash class="w-5 h-5"/>
+                            </button>
+                        </div>
+                    @endforeach
                 </div>
+            @endif
+
+            <div class="flex justify-end space-x-2 mt-4">
+                <button type="button" wire:click="cerrarModalEditArchivos" class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 text-sm">Cancelar</button>
+                <button type="button" wire:click="guardarNuevosArchivos" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm">Guardar Cambios</button>
             </div>
         </div>
+    </div>
         @endif
 
         @if($archivos_guardados)

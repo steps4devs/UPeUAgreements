@@ -21,9 +21,9 @@ class CRUDConv extends Component
     public $entidades = [];
     public $facultades = [];
     public $carreras = [];
-    public $clausulas = [];
+    public $clausulas = []; // Archivos que se están subiendo
     public $clausulas_acumuladas = [];
-    public $archivos_guardados = [];
+    public $archivos_guardados = []; // Almacena los documentos subidos
     public $showEntidadForm = false; // Controla la visibilidad del formulario de entidad
     public $entidadId = null; // Declarar la propiedad para manejar la entidad
     public $nombreEntidad, $ubicacion, $contacto, $logo, $logoPreview;
@@ -36,9 +36,10 @@ class CRUDConv extends Component
         $this->facultades = \App\Models\Facultad::all();
         $this->carreras = [];
 
+        $this->convenioId = $id;
+
         if ($id) {
-            $this->convenioId = $id;
-            $convenio = Convenio::with('documentos')->findOrFail($id);
+            $convenio = \App\Models\Convenio::with('documentos')->findOrFail($id);
             $this->nombreConvenio = $convenio->nombreConvenio;
             $this->descripcion = $convenio->descripcion;
             $this->fecha_inicio = $convenio->fecha_inicio->format('Y-m-d');
@@ -48,6 +49,8 @@ class CRUDConv extends Component
             $this->convenio_id_entidad = $convenio->convenio_id_entidad;
             $this->facultad_id = $convenio->facultad_id;
             $this->carrera_id = $convenio->carrera_id;
+
+            // Cargar documentos existentes
             $this->archivos_guardados = $convenio->documentos->toArray();
             if ($this->facultad_id) {
                 $this->carreras = \App\Models\Carrera::where('facultad_id', $this->facultad_id)->get();
@@ -107,15 +110,32 @@ class CRUDConv extends Component
     public function updatedClausulas($files)
     {
         foreach ($files as $file) {
-            $this->clausulas_acumuladas[] = $file;
+            // Guardar archivo en el almacenamiento
+            $path = $file->store('clausulas', 'public');
+
+            // Determinar el tipo de archivo
+            $mime = $file->getClientMimeType();
+            $tipo = str_contains($mime, 'pdf') ? 'PDF' : (str_contains($mime, 'image') ? 'Imagen' : 'Otro');
+
+            // Guardar en la base de datos
+            DocumentoConvenio::create([
+                'nombreArchivo'   => $file->getClientOriginalName(),
+                'tipo_documento'  => $tipo,
+                'fecha_subida'    => now()->toDateString(),
+                'hora_subida'     => now()->toTimeString(),
+                'convenio_id'     => $this->convenioId,
+                'ruta'            => $path,
+            ]);
         }
-        $this->clausulas = [];
+
+        // Recargar documentos subidos
+        $this->archivos_guardados = DocumentoConvenio::where('convenio_id', $this->convenioId)->get()->toArray();
     }
 
     public function eliminarArchivo($key)
     {
-        unset($this->clausulas_acumuladas[$key]);
-        $this->clausulas_acumuladas = array_values($this->clausulas_acumuladas);
+        unset($this->clausulas_acumuladas[$key]); // Eliminar archivo por clave
+        $this->clausulas_acumuladas = array_values($this->clausulas_acumuladas); // Reindexar el array
     }
 
     public function eliminarArchivoGuardado($id)
@@ -163,17 +183,11 @@ class CRUDConv extends Component
         $convenio->convenio_creador = Auth::id();
         $convenio->save();
 
-        // Guardar archivos nuevos
+        // Guardar archivos acumulados
         if ($this->clausulas_acumuladas && is_array($this->clausulas_acumuladas)) {
             foreach ($this->clausulas_acumuladas as $archivo) {
                 $mime = $archivo->getClientMimeType();
-                if (str_contains($mime, 'pdf')) {
-                    $tipo = 'PDF';
-                } elseif (str_contains($mime, 'image')) {
-                    $tipo = 'Imagen';
-                } else {
-                    $tipo = 'Otro';
-                }
+                $tipo = str_contains($mime, 'pdf') ? 'PDF' : (str_contains($mime, 'image') ? 'Imagen' : 'Otro');
                 $path = $archivo->store('clausulas');
                 DocumentoConvenio::create([
                     'nombreArchivo'   => $archivo->getClientOriginalName(),

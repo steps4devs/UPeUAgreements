@@ -110,45 +110,55 @@
 
                 <!-- Documentos -->
                 <div class="bg-white rounded-lg p-6 border shadow-lg hover:shadow-xl transition-shadow duration-300 ease-in-out">
-                    <h3 class="font-bold text-lg mb-2 text-[#003264]">Documentos</h3>
-                    @forelse($convenio->documentos as $doc)
-                        @php
-                            $ext = strtolower(pathinfo($doc->nombreArchivo, PATHINFO_EXTENSION));
-                        @endphp
-                        <div class="flex items-center gap-3 mb-2">
-                            <span class="inline-block w-8 h-8 bg-gray-100 rounded flex items-center justify-center">
-                                @if($ext === 'pdf')
-                                    <x-heroicon-o-document-text class="w-5 h-5 text-red-500"/>
-                                @elseif(in_array($ext, ['doc', 'docx']))
-                                    <x-heroicon-o-document-text class="w-5 h-5 text-blue-700"/>
-                                @elseif(in_array($ext, ['xls', 'xlsx']))
-                                    <x-heroicon-o-document-text class="w-5 h-5 text-green-600"/>
-                                @elseif(in_array($ext, ['ppt', 'pptx']))
-                                    <x-heroicon-o-document-text class="w-5 h-5 text-orange-500"/>
-                                @elseif(in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp']))
-                                    <x-heroicon-o-photo class="w-5 h-5 text-purple-500"/>
-                                @else
-                                    <x-heroicon-o-document class="w-5 h-5 text-gray-400"/>
-                                @endif
-                            </span>
-                            <div>
-                                <div class="font-semibold">{{ $doc->nombreArchivo }}</div>
-                                <div class="text-xs text-gray-500">{{ $doc->tipo_documento }} &middot; Subido el {{ \Carbon\Carbon::parse($doc->fecha_subida)->format('d/m/Y') }}</div>
+                    <h3 class="font-bold text-lg mb-4 text-[#003264]">Documentos</h3>
+
+                    <!-- Subir nuevos archivos -->
+                    <div class="border-2 border-dashed border-[#DEDAFF] rounded-lg flex flex-col items-center justify-center py-10 px-4 mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-[#003264] mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 16v-8m0 0l-4 4m4-4l4 4M4 20h16" />
+                        </svg>
+                        <span class="block text-base text-[#003264] font-semibold mb-2">Arrastre y suelte archivos aquí o</span>
+                        <input type="file" multiple wire:model="clausulas" class="hidden" id="clausulas">
+                        <label for="clausulas" class="cursor-pointer inline-flex items-center justify-center w-full border border-neutral-300 rounded-lg px-4 py-2 bg-white text-sm text-[#003264] hover:bg-[#f0f8ff] hover:border-[#0097ff] transition">
+                            Seleccionar archivos
+                        </label>
+                        @error('clausulas.*') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                    </div>
+
+                    <!-- Mostrar barra de progreso -->
+                    <div x-data="{ progress: 0 }"
+                         x-on:livewire-upload-start="progress = 0"
+                         x-on:livewire-upload-finish="progress = 0"
+                         x-on:livewire-upload-error="progress = 0"
+                         x-on:livewire-upload-progress="progress = $event.detail.progress"
+                         class="w-full mt-2">
+                        <template x-if="progress > 0">
+                            <div class="w-full bg-gray-200 rounded h-2">
+                                <div class="bg-blue-600 h-2 rounded" :style="'width: ' + progress + '%'"></div>
                             </div>
-                            <a href="{{ route('clausulas.descargar', $doc->id) }}" target="_blank" class="ml-auto text-blue-600 hover:text-blue-800" title="Descargar archivo">
-                                <x-heroicon-o-arrow-down-tray class="w-5 h-5"/>
-                            </a>
-                            <form method="POST" action="{{ route('clausulas.eliminar', $doc->id) }}" class="inline">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="text-red-600 hover:text-red-800 ml-2" title="Eliminar archivo">
-                                    <x-heroicon-o-trash class="w-5 h-5"/>
-                                </button>
-                            </form>
+                        </template>
+                    </div>
+
+                    <!-- Mostrar documentos subidos -->
+                    @if($archivos_guardados)
+                        <div class="space-y-2 mt-4">
+                            @foreach($archivos_guardados as $doc)
+                                <div class="flex items-center gap-2 bg-white rounded shadow px-2 py-1">
+                                    <x-heroicon-o-document class="w-5 h-5"/>
+                                    <span class="truncate text-xs">{{ $doc['nombreArchivo'] }}</span>
+                                    <a href="{{ route('clausulas.descargar', $doc['id']) }}" target="_blank" class="text-blue-600 hover:text-blue-800" title="Descargar archivo">
+                                        <x-heroicon-o-arrow-down-tray class="w-5 h-5"/>
+                                    </a>
+                                    <button type="button"
+                                        class="text-red-600 hover:text-red-800"
+                                        wire:click="eliminarArchivoGuardado({{ $doc['id'] }})"
+                                        title="Eliminar archivo">
+                                        <x-heroicon-o-trash class="w-5 h-5"/>
+                                    </button>
+                                </div>
+                            @endforeach
                         </div>
-                    @empty
-                        <div class="text-gray-500">No hay documentos adjuntos.</div>
-                    @endforelse
+                    @endif
                 </div>
             </div>
 
