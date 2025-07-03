@@ -6,6 +6,8 @@ use Livewire\Component;
 use Livewire\WithFileUploads;
 use App\Models\Convenio;
 use App\Models\DocumentoConvenio;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 
 class DetalleConv extends Component
 {
@@ -17,18 +19,47 @@ class DetalleConv extends Component
     public $ambito_3;
     public $mensaje = null;
     public $notificaciones = [];
-    public $archivos_guardados = [];
     public $clausulas = [];
+    public $archivos_guardados = [];
+    public $usuario;
+    public $administradorConvenio;
+    public $coordinadorConvenio;
 
     public function mount($id)
     {
-        $this->convenio = \App\Models\Convenio::with('documentos')->findOrFail($id);
+        $this->convenio = Convenio::with('documentos')->findOrFail($id);
         $this->ambito_1 = $this->convenio->ambito_1;
         $this->ambito_2 = $this->convenio->ambito_2;
         $this->ambito_3 = $this->convenio->ambito_3;
+        $this->usuario = Auth::user();
+
+        // Busca el primer usuario con rol Administrador
+        $this->administradorConvenio = \App\Models\User::where('rol', 'Administrador')->first();
+
+        // Busca el primer usuario con rol Coordinador
+        $this->coordinadorConvenio = \App\Models\User::where('rol', 'Coordinador')->first();
 
         // Cargar documentos existentes
         $this->archivos_guardados = $this->convenio->documentos->toArray();
+    }
+
+    public function guardarAmbito($numero)
+    {
+        if ($numero == 1) {
+            $this->convenio->ambito_1 = $this->ambito_1;
+            $this->convenio->save();
+            $this->dispatch('notificar', message: 'Ámbito 1 guardado correctamente.');
+        }
+        if ($numero == 2) {
+            $this->convenio->ambito_2 = $this->ambito_2;
+            $this->convenio->save();
+            $this->dispatch('notificar', message: 'Ámbito 2 guardado correctamente.');
+        }
+        if ($numero == 3) {
+            $this->convenio->ambito_3 = $this->ambito_3;
+            $this->convenio->save();
+            $this->dispatch('notificar', message: 'Ámbito 3 guardado correctamente.');
+        }
     }
 
     public function updatedClausulas($files)
@@ -58,31 +89,14 @@ class DetalleConv extends Component
 
     public function eliminarArchivoGuardado($id)
     {
-        $documento = DocumentoConvenio::findOrFail($id);
-        \Storage::disk('public')->delete($documento->ruta);
-        $documento->delete();
+        $doc = DocumentoConvenio::find($id);
+        if ($doc) {
+            Storage::disk('public')->delete($doc->ruta);
+            $doc->delete();
+        }
 
-        // Recargar documentos subidos
+        // Refresca la lista
         $this->archivos_guardados = DocumentoConvenio::where('convenio_id', $this->convenio->id)->get()->toArray();
-    }
-
-    public function guardarAmbito($numero)
-    {
-        if ($numero == 1) {
-            $this->convenio->ambito_1 = $this->ambito_1;
-            $this->convenio->save();
-            $this->dispatch('notificar', message: 'Ámbito 1 guardado correctamente.');
-        }
-        if ($numero == 2) {
-            $this->convenio->ambito_2 = $this->ambito_2;
-            $this->convenio->save();
-            $this->dispatch('notificar', message: 'Ámbito 2 guardado correctamente.');
-        }
-        if ($numero == 3) {
-            $this->convenio->ambito_3 = $this->ambito_3;
-            $this->convenio->save();
-            $this->dispatch('notificar', message: 'Ámbito 3 guardado correctamente.');
-        }
     }
 
     public function render()

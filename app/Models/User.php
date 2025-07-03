@@ -23,7 +23,7 @@ class User extends Authenticatable
         'email',
         'rol',
         'password',
-        'usuario_carrera_id',
+        'user_carrera_id',
     ];
 
     /**
@@ -59,4 +59,10 @@ class User extends Authenticatable
             ->map(fn (string $name) => Str::of($name)->substr(0, 1))
             ->implode('');
     }
+
+    public function carrera()
+    {
+        return $this->belongsTo(Carrera::class, 'user_carrera_id');
+    }
+
 }

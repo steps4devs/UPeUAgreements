@@ -6,7 +6,6 @@ use Livewire\Component;
 use Livewire\WithFileUploads;
 use App\Models\Convenio;
 use App\Models\DocumentoConvenio;
-use App\Models\Entidad;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
@@ -38,9 +37,6 @@ class ConveniosMain extends Component
     public $filtro_carrera = '';
     public $filtro_fecha_inicio = '';
     public $filtro_fecha_fin = '';
-
-    public $showEntidadForm = false; // Controla la visibilidad del formulario de entidad
-    public $nombreEntidad, $ubicacion, $contacto, $logo, $logoPreview;
 
     protected function rules()
     {
@@ -79,7 +75,7 @@ class ConveniosMain extends Component
 
     public function render()
     {
-        $convenios = Convenio::with(['entidad', 'facultad', 'carrera'])
+        $query = Convenio::with(['entidad', 'facultad', 'carrera'])
             ->when($this->filtro_estado, fn($q) => $q->where('estado', $this->filtro_estado))
             ->when($this->filtro_alcance, fn($q) => $q->where('alcance', $this->filtro_alcance))
             ->when($this->filtro_entidad, fn($q) => $q->where('convenio_id_entidad', $this->filtro_entidad))
@@ -87,9 +83,25 @@ class ConveniosMain extends Component
             ->when($this->filtro_carrera, fn($q) => $q->where('carrera_id', $this->filtro_carrera))
             ->when($this->filtro_fecha_inicio, fn($q) => $q->whereDate('fecha_inicio', '>=', $this->filtro_fecha_inicio))
             ->when($this->filtro_fecha_fin, fn($q) => $q->whereDate('fecha_fin', '<=', $this->filtro_fecha_fin))
-            ->where('nombreConvenio', 'like', '%'.$this->search.'%')
-            ->orderBy('updated_at', 'desc')
-            ->paginate($this->perPage);
+            ->where('nombreConvenio', 'like', '%'.$this->search.'%');
+
+        if (in_array(Auth::user()->rol, ['Secretaria', 'Coordinador'])) {
+            $user = Auth::user();
+            $carreraId = $user->user_carrera_id;
+            $facultadId = optional($user->carrera)->facultad_id;
+
+            $query->where(function($q) use ($carreraId, $facultadId) {
+                $q->where(function($q2) {
+                    $q2->whereNull('facultad_id')->whereNull('carrera_id'); // Generales
+                })
+                ->orWhere(function($q2) use ($facultadId) {
+                    $q2->where('facultad_id', $facultadId)->whereNull('carrera_id'); // De su facultad
+                })
+                ->orWhere('carrera_id', $carreraId); // De su carrera
+            });
+        }
+
+        $convenios = $query->orderBy('updated_at', 'desc')->paginate($this->perPage);
 
         return view('livewire.convenios-main', compact('convenios'));
     }
@@ -300,38 +312,5 @@ class ConveniosMain extends Component
         $this->clausulas_acumuladas = [];
         $this->archivos_guardados = [];
         $this->convenioIdEditArchivos = null;
-    }
-
-    public function openEntidadForm()
-    {
-        $this->reset(['nombreEntidad', 'ubicacion', 'contacto', 'logo', 'logoPreview']);
-        $this->showEntidadForm = true;
-    }
-
-    public function closeEntidadForm()
-    {
-        $this->showEntidadForm = false;
-    }
-
-    public function saveEntidad()
-    {
-        $this->validate([
-            'nombreEntidad' => 'required|string|max:200',
-            'ubicacion' => 'required|string|max:200',
-            'contacto' => 'required|string|max:100',
-            'logo' => 'nullable|image|max:10240',
-        ]);
-
-        $logoPath = $this->logo ? $this->logo->store('logos', 'public') : null;
-
-        Entidad::create([
-            'nombreEntidad' => $this->nombreEntidad,
-            'ubicacion' => $this->ubicacion,
-            'contacto' => $this->contacto,
-            'logo' => $logoPath,
-        ]);
-
-        $this->closeEntidadForm();
-        $this->entidades = Entidad::all(); // Refrescar el listado de entidades
     }
 }

@@ -85,6 +85,13 @@ class DatabaseSeeder extends Seeder
                 'rol' => 'Administrador',
                 'user_carrera_id' => $carreraEjemplo->id,
             ]);
+            User::factory()->create([
+                'name' => 'Dany',
+                'email' => 'dany.levano@gmail.com',
+                'password' => bcrypt('1234567'),
+                'rol' => 'Coordinador',
+                'user_carrera_id' => 4,
+            ]);
             User::factory(5)->create([
                 'user_carrera_id' => $carreraEjemplo->id,
                 'rol' => 'Coordinador',

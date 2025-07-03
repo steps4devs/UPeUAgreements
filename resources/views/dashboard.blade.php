@@ -7,7 +7,7 @@
                     <input
                         type="text"
                         placeholder="Buscar convenios, entidades, documentos..."
-                        class="w-full pl-4 pr-10 py-1.5 rounded-full border bg-white border-neutral-300 focus:outline-none focus:ring-2 focus:ring-[#003264] text-sm"
+                        class="w-full pl-4 pr-10 py-1.5 rounded-full border bg-white border-neutral-300 focus:outline-none focus:ring-2 focus:ring-[#003264] text-sm transition-all duration-200 ease-in-out transform focus:scale-105"
                     />
                     <span class="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -17,7 +17,7 @@
                 </div>
             </div>
             <div class="flex items-center gap-4">
-                <button class="border border-[#003264] rounded-full px-5 py-1 text-sm hover:bg-[#f6f8ff]">Ayuda</button>
+                <button class="border border-[#003264] rounded-full px-5 py-1 text-sm text-[#003264] bg-white hover:bg-[#003264] hover:text-white hover:border-[#003264] transition-all duration-200 ease-in-out transform hover:scale-105">Ayuda</button>
                 <div class="flex items-center gap-2">
                     <img src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->name) }}" alt="avatar" class="w-8 h-8 rounded-full" />
                     <div>
@@ -70,7 +70,7 @@
                     <div class="flex items-center justify-between mb-4">
                         <div class="font-semibold text-[#003264] text-lg">Últimos Convenios</div>
                         <a href="{{ route('convenios-main') }}"
-                           class="px-4 py-2 bg-[#0097ff] text-white rounded-full font-medium hover:bg-[#007acc] transition text-sm">
+                           class="px-4 py-2 bg-[#0097ff] text-white rounded-full font-medium border border-[#0097ff] hover:bg-white hover:text-black hover:border-[#0097ff] transition-all duration-200 ease-in-out transform hover:scale-101 text-sm">
                             Ver todos
                         </a>
                     </div>
@@ -116,29 +116,35 @@
                 <!-- Distribución por Facultad y Acciones Rápidas -->
                 <div class="w-full md:w-80 flex flex-col gap-4">
                     <!-- Distribución por Facultad -->
-                    <div class="bg-white dark:bg-neutral-900 rounded-xl p-4 border border-neutral-200 dark:border-neutral-700 flex flex-col gap-4 shadow-md hover:shadow-lg transition-shadow duration-300 ease-in-out">
-                        <div class="font-semibold mb-2 text-[#003264]">Distribución por Facultad</div>
-                        <!-- Aquí agregamos el canvas para el gráfico -->
-                        <div class="facultadChart">
-                            <canvas id="facultadChart" height="220"></canvas>
+                    @if(!in_array(Auth::user()->rol, ['Secretaria', 'Coordinador']))
+                        <div class="bg-white dark:bg-neutral-900 rounded-xl p-4 border border-neutral-200 dark:border-neutral-700 flex flex-col gap-4 shadow-md hover:shadow-lg transition-shadow duration-300 ease-in-out">
+                            <div class="font-semibold mb-2 text-[#003264]">Distribución por Facultad</div>
+                            <!-- Aquí agregamos el canvas para el gráfico -->
+                            <div class="facultadChart">
+                                <canvas id="facultadChart" height="220"></canvas>
+                            </div>
                         </div>
-                    </div>
+                    @endif
                     <!-- Acciones Rápidas -->
                     <div class="bg-white dark:bg-neutral-900 rounded-xl p-4 border border-neutral-200 dark:border-neutral-700 flex flex-col gap-3 shadow-md hover:shadow-lg transition-shadow duration-300 ease-in-out">
                         <div class="font-semibold mb-2 text-[#003264]">Acciones Rápidas</div>
                         @if(Auth::user()->rol === 'Administrador' || Auth::user()->rol === 'Sheridan')
+                            <!-- Botón Nuevo Convenio -->
                             <a href="{{ route('convenios.create') }}"
                                 class="w-full md:w-full h-9 flex items-center justify-center border border-[#0097ff] text-white bg-[#0097ff] hover:bg-white hover:text-black rounded-full font-medium transition-all duration-200 ease-in-out transform hover:scale-101 text-sm gap-2">
                                 <x-heroicon-o-plus class="w-6 h-6"/>
                                 Nuevo Convenio
                             </a>
                         @endif
+                        <!-- Botón Exportar -->
                         <a href="{{ route('convenios-main') }}?action=export"
-                           class="w-full h-9 flex items-center justify-center bg-black text-white hover:bg-neutral-800 rounded-full font-medium transition text-sm">
+                           class="w-full h-9 flex items-center justify-center border border-black text-white bg-black hover:bg-white hover:text-black hover:border-black rounded-full font-medium transition-all duration-200 ease-in-out transform hover:scale-101 text-sm">
                             Exportar
                         </a>
+
+                        <!-- Botón Configuración -->
                         <a href="{{ route('configuracion-main') }}"
-                           class="w-full h-9 flex items-center justify-center border border-neutral-300 text-black hover:bg-neutral-100 rounded-full font-medium transition text-sm">
+                           class="w-full h-9 flex items-center justify-center border border-[#003264] text-[#003264] bg-white hover:bg-[#003264] hover:text-white hover:border-[#003264] rounded-full font-medium transition-all duration-200 ease-in-out transform hover:scale-101 text-sm">
                             Configuración
                         </a>
                     </div>
@@ -146,57 +152,62 @@
             </div>
         </div>
 
-        <!-- Chart.js para el gráfico de distribución por facultad -->
-        <script>
-            ScrollReveal().reveal('.metrics');
-            ScrollReveal().reveal('.facultadChart', {
-                delay: 200,
-                duration: 800,
-                distance: '50px',
-                origin: 'bottom'
-            });
-            document.addEventListener('DOMContentLoaded', function () {
-                const ctx = document.getElementById('facultadChart').getContext('2d');
-                const facultadChart = new Chart(ctx, {
-                    type: 'pie',
-                    data: {
-                        labels: Object.keys(@json($facultades)),
-                        datasets: [{
-                            data: Object.values(@json($facultades)),
-                            backgroundColor: [
-                                '#4CAF50', // Ingeniería
-                                '#FF9800', // Ciencias Empresariales
-                                '#2196F3', // Ciencias de la Salud
-                                '#9C27B0', // Educación
-                                '#607D8B'  // Otros
-                            ],
-                            hoverOffset: 10
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        plugins: {
-                            legend: {
-                                position: 'bottom',
-                                labels: {
-                                    color: '#003264',
-                                    font: {
-                                        size: 14
+        @if(!in_array(Auth::user()->rol, ['Secretaria', 'Coordinador']))
+            @php
+                $labels = $facultades->pluck('facultad')->toArray();
+                $data = $facultades->pluck('total')->toArray();
+            @endphp
+            <style>
+                .facultadChart canvas {
+                    width: 300px !important;
+                    height: 300px !important;
+                    max-width: none !important;
+                }
+            </style>
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    const ctx = document.getElementById('facultadChart').getContext('2d');
+                    const facultadChart = new Chart(ctx, {
+                        type: 'pie',
+                        data: {
+                            labels: @json($labels),
+                            datasets: [{
+                                data: @json($data),
+                                backgroundColor: [
+                                    '#4CAF50', // Ingeniería
+                                    '#FF9800', // Ciencias Empresariales
+                                    '#2196F3', // Ciencias de la Salud
+                                    '#9C27B0', // Educación
+                                    '#607D8B'  // Otros
+                                ],
+                                hoverOffset: 10
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            plugins: {
+                                legend: {
+                                    position: 'bottom',
+                                    labels: {
+                                        color: '#003264',
+                                        font: {
+                                            size: 14
+                                        }
                                     }
-                                }
-                            },
-                            tooltip: {
-                                callbacks: {
-                                    label: function (tooltipItem) {
-                                        const value = tooltipItem.raw;
-                                        return `${tooltipItem.label}: ${value}%`;
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function (tooltipItem) {
+                                            const value = tooltipItem.raw;
+                                            return `${tooltipItem.label}: ${value}`;
+                                        }
                                     }
                                 }
                             }
                         }
-                    }
+                    });
                 });
-            });
-        </script>
+            </script>
+        @endif
     </x-layouts.app>
 </div>

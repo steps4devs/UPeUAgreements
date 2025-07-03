@@ -15,7 +15,9 @@
                 <flux:navlist.group :heading="('Platform')" class="grid">
                     <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>{{ __('Dashboard') }}</flux:navlist.item>
                     <flux:navlist.item icon="academic-cap" :href="route('convenios-main')" :current="request()->routeIs('convenios-main')" wire:navigate>{{ __('Convenios') }}</flux:navlist.item>
-                    <flux:navlist.item icon="building-office" :href="route('entidades-main')" :current="request()->routeIs('entidades-main')" wire:navigate>{{ __('Entidades') }}</flux:navlist.item>
+                    @if(!in_array(auth()->user()->rol, ['Secretaria', 'Coordinador']))
+                        <flux:navlist.item icon="building-office" :href="route('entidades-main')" :current="request()->routeIs('entidades-main')" wire:navigate>{{ __('Entidades') }}</flux:navlist.item>
+                    @endif
                     <flux:navlist.item icon="document" :href="route('reportes-main')" :current="request()->routeIs('reportes-main')" wire:navigate>{{ __('Reportes') }}</flux:navlist.item>
                     <flux:navlist.item icon="cog-8-tooth" :href="route('configuracion-main')" :current="request()->routeIs('configuracion-main')" wire:navigate>{{ __('Configuración') }}</flux:navlist.item>
                 </flux:navlist.group>
@@ -118,8 +120,8 @@
             </flux:dropdown>
         </flux:header>
 
-        <div class="z-10 fixed inset-0 bg-black/10 hidden [[data-show-stashed-sidebar]_&]:block lg:[[data-show-stashed-sidebar]_&]:hidden" 
-             x-data="" 
+        <div class="z-10 fixed inset-0 bg-black/10 hidden [[data-show-stashed-sidebar]&]:block lg:[[data-show-stashed-sidebar]&]:hidden"
+             x-data=""
              x-on:click="document.body.removeAttribute('data-show-stashed-sidebar')">
         </div>
 
