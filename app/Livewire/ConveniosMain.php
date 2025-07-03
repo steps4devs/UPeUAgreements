@@ -6,6 +6,7 @@ use Livewire\Component;
 use Livewire\WithFileUploads;
 use App\Models\Convenio;
 use App\Models\DocumentoConvenio;
+use App\Models\Entidad;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
@@ -37,6 +38,9 @@ class ConveniosMain extends Component
     public $filtro_carrera = '';
     public $filtro_fecha_inicio = '';
     public $filtro_fecha_fin = '';
+
+    public $showEntidadForm = false; // Controla la visibilidad del formulario de entidad
+    public $nombreEntidad, $ubicacion, $contacto, $logo, $logoPreview;
 
     protected function rules()
     {
@@ -296,5 +300,38 @@ class ConveniosMain extends Component
         $this->clausulas_acumuladas = [];
         $this->archivos_guardados = [];
         $this->convenioIdEditArchivos = null;
+    }
+
+    public function openEntidadForm()
+    {
+        $this->reset(['nombreEntidad', 'ubicacion', 'contacto', 'logo', 'logoPreview']);
+        $this->showEntidadForm = true;
+    }
+
+    public function closeEntidadForm()
+    {
+        $this->showEntidadForm = false;
+    }
+
+    public function saveEntidad()
+    {
+        $this->validate([
+            'nombreEntidad' => 'required|string|max:200',
+            'ubicacion' => 'required|string|max:200',
+            'contacto' => 'required|string|max:100',
+            'logo' => 'nullable|image|max:10240',
+        ]);
+
+        $logoPath = $this->logo ? $this->logo->store('logos', 'public') : null;
+
+        Entidad::create([
+            'nombreEntidad' => $this->nombreEntidad,
+            'ubicacion' => $this->ubicacion,
+            'contacto' => $this->contacto,
+            'logo' => $logoPath,
+        ]);
+
+        $this->closeEntidadForm();
+        $this->entidades = Entidad::all(); // Refrescar el listado de entidades
     }
 }

@@ -19,6 +19,7 @@
             <flux:select.option value="25">25</flux:select.option>
         </flux:select>
     </div>
+    
 
     <div class="hidden md:grid grid-cols-5 gap-2 bg-gray-100 rounded-t-lg px-2 sm:px-4 py-2 font-semibold text-xs sm:text-sm">
         <div class="truncate">Logo</div>

@@ -24,6 +24,9 @@ class CRUDConv extends Component
     public $clausulas = [];
     public $clausulas_acumuladas = [];
     public $archivos_guardados = [];
+    public $showEntidadForm = false; // Controla la visibilidad del formulario de entidad
+    public $entidadId = null; // Declarar la propiedad para manejar la entidad
+    public $nombreEntidad, $ubicacion, $contacto, $logo, $logoPreview;
 
     protected $listeners = ['archivoSubido' => 'actualizarArchivosGuardados'];
 
@@ -197,8 +200,53 @@ class CRUDConv extends Component
         }
     }
 
+    public function openEntidadForm()
+    {
+        $this->reset(['entidadId', 'nombreEntidad', 'ubicacion', 'contacto', 'logo', 'logoPreview']);
+        $this->showEntidadForm = true;
+    }
+
+    public function closeEntidadForm()
+    {
+        $this->showEntidadForm = false;
+    }
+
+    public function updatedLogo()
+    {
+        $this->validate([
+            'logo' => 'nullable|image|max:10240', // Validar que sea una imagen y máximo 10 MB
+        ]);
+
+        $this->logoPreview = $this->logo->store('logos', 'public');
+        $this->logoPreview = asset('storage/' . $this->logoPreview);
+    }
+
+    public function saveEntidad()
+    {
+        $this->validate([
+            'nombreEntidad' => 'required|string|max:200',
+            'ubicacion' => 'required|string|max:200',
+            'contacto' => 'required|string|max:100',
+            'logo' => 'nullable|image|max:10240',
+        ]);
+
+        $logoPath = $this->logo ? $this->logo->store('logos', 'public') : null;
+
+        Entidad::create([
+            'nombreEntidad' => $this->nombreEntidad,
+            'ubicacion' => $this->ubicacion,
+            'contacto' => $this->contacto,
+            'logo' => $logoPath,
+        ]);
+
+        $this->closeEntidadForm();
+        $this->entidades = Entidad::all(); // Refrescar el listado de entidades
+    }
+
     public function render()
     {
-        return view('livewire.c-r-u-d-conv');
+        return view('livewire.c-r-u-d-conv', [
+            'entidades' => Entidad::all(),
+        ]);
     }
 }
