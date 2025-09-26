@@ -18,7 +18,6 @@ public interface UserMapper {
     /**
      * Convert User entity to UserDTO (excludes password for security)
      */
-    @Mapping(target = "password", ignore = true)
     UserDTO toDTO(User user);
     
     /**
